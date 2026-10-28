@@ -108,9 +108,9 @@ MODULES = [
          "Descriptive only: at 3× strength the post-trained chat models retain less right after the window (3–4%) than the bases (8–11%). But the format-matched comparisons disagree, so this tracks chat format at least as much as training.",
      ],
      "figures": ["q6_trajectories.png", "q6_trajectories_3x.png", "q6_control.png"]},
-    {"id": "Q5", "name": "Persona vectors vs the axis", "status": "deferred",
+    {"id": "Q5", "name": "Persona vectors vs the axis", "status": "running",
      "question": "Does orthogonalising a trait vector to the axis remove its steering effect?",
-     "verdict": "On hold (Olivia): runs only if the pod is idle after Q6 and the register control. No trait vector passed the M0 steering gate; the next grid is 1 layer at c = 2–4.", "points": [], "figures": []},
+     "verdict": "Released now that the pod is idle: one final steering grid (1 layer, c = 2–4), then the mediation test on any trait that passes.", "points": [], "figures": []},
 ]
 
 STATUS_LABEL = {"done": "Done", "running": "Running", "queued": "Queued", "blocked": "Blocked", "deferred": "Deferred"}
