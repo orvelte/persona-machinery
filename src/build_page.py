@@ -57,19 +57,19 @@ MODULES = [
          "Post-trained models lean the other way: Qwen instruct −0.038 [−0.060, −0.015] and Qwen3.6-27B −0.071 [−0.120, −0.023], meaning more test-fitting under a human reviewer in stories.",
          "Qwen3.8-27B is near 0 (−0.006 [−0.035, +0.023]) but its validity control fails. The pre-registered ordering 3.8 > 3.6 holds (+0.065 [+0.003, +0.122]), yet the story measure does not reproduce 3.8's +48-point behavioural effect.",
          "Arm B: neither base model games when simulating an Assistant (Qwen 0–1, OLMo 4–5 of 48), even after the one allowed escalation, so the behavioural column is empty.",
-         "The decision table mechanically returns row 4 ('the convention is about people') for Qwen base, only because one small CI excludes 0. The human − AI protagonist difference is −0.003 [−0.042, +0.036]; this is not a robust finding.",
+         "Decision table: no row fires. The earlier row-4 call rested on a percentile bootstrap over 4 stories; an exact sign-flip test gives p = 0.25, and with 4 stories the smallest attainable p is 0.125.",
      ],
      "figures": ["q4b_armA.png", "q4b_armB.png"]},
     {"id": "Q4", "name": "Pretraining origin of the axis", "status": "done",
      "question": "Base vs instruct axis cosine and CKA; a 200-passage narrative battery in five classes; OLMo stage tracking; three convention-vs-persona tasks.",
-     "verdict": "The axis exists before post-training. It tracks impersonal reference register first and helpful-vs-villain character second, additively, and identically in base and post-trained models.",
+     "verdict": "The axis exists before post-training (Qwen). On raw passages its specific signal is impersonal third-person reference text versus a character's own voice; character and fiction-vs-exposition differences are generic passage geometry.",
      "points": [
          "Qwen: the base model's narrative axis is the instruct axis (cos +0.81 with the instruct chat axis at L* 24; +0.88 in matched narrative format; split-half ceiling ≈ 0.93).",
          "OLMo: not the same axis by the 0.7 rule (+0.59 base narrative vs RL chat), mostly a format difference: base vs RL in matched narrative format is +0.91 (descriptive only).",
          "Narrative battery: the prediction fails in reverse. Encyclopaedia and code passages sit at the Assistant end; helpful-character passages sit below the other classes in every model (Qwen base g = −0.73 [−1.05, −0.44], instruct −0.79; OLMo base −0.93, RL −1.19).",
-         "Register control (Olivia's 2×2, 40 passages per class): the pre-registered rule fires 'both' in all six models. Register effect +1.9 SD in Qwen base [+1.7, +2.3], character effect +1.2 SD [+0.9, +1.5], interaction ≈ 0. Base and post-trained models do not differ.",
-         "Only third-person encyclopaedia-style entries reach the Assistant end, whether about helpers (+3.0) or villains (+2.1), next to encyclopaedia and code text (+3.6). First-person manuals stay where the same character's stories sit (helper −0.5, villain −2.0). The key contrast, villain entry − helper manual, is +2.66 SD [+2.28, +3.18] in Qwen base.",
-         "So the axis reads impersonal reference register versus a character's own voice, plus a helper-over-villain step of about 1.2 SD. That explains the reversed battery result.",
+         "Register control (Olivia's 2×2, 40 passages per class): the pre-registered rule fires 'both' in all six models (Qwen base: register +1.9 SD, character +1.2 SD, interaction ≈ 0). After review, these were re-tested against 2,000 random directions.",
+         "Only the entry-versus-manual contrast is specific to the axis: +3.83 SD in Qwen base and +3.60 in instruct, above at least 99.7% of both null families. The character effect (79–96th percentile), the expository-vs-story gap and the villain entry − helper manual contrast (45–95th) are not; most directions separate these passage classes by 1–3 SD.",
+         "The battery's reversed helpful-class gap does not beat its nulls either. So the earlier 'reversed' reading is withdrawn; 'helpful characters do not sit at the Assistant end' stands.",
          "Exploratory: among narrative and human passages only, Qwen's helpful characters do lean toward the Assistant end, equally in base (+0.52) and instruct (+0.45).",
          "OLMo stages: SFT creates the chat-format axis (later stages cos ≥ 0.99 to RL); the battery ordering is identical at every stage; DPO gives the largest gain in role separation.",
          "Convention-vs-persona tasks: base and post-trained models answer alike in narrative format; the frame matters more than training. The axis-ablation arm is uninterpretable because its positive control failed.",
@@ -77,7 +77,7 @@ MODULES = [
      "figures": ["q4_register.png", "q4_axis_cos.png", "q4_battery.png", "q4_stages.png", "q4_tasks.png"]},
     {"id": "Q1", "name": "Writers of the axis coordinate", "status": "done",
      "question": "Attribute the axis projection at L* to every attention head and MLP; is it written by a few components (top 10 explain ≥ 50% of the Assistant − role gap) or diffusely? Check by patching.",
-     "verdict": "Intermediate: the top 10 components write 43.5% [42.6, 44.7] of the gap, mostly late MLPs and linear-attention heads. Behavioural positive control failed.",
+     "verdict": "Intermediate: the top 10 components write 43.5% [42.6, 44.7] of the gap, mostly late MLPs and linear-attention heads. Behavioural positive control failed, so what the writers do for behaviour is unknown.",
      "points": [
          "Qwen3.5-9B instruct, L* = 24. The embedding plus all 697 components reconstructs the residual with 0.009% error.",
          "14 components reach 50% of the default − role gap, 73 reach 80%. Blocks 19–24 write 77%. In aggregate, linear-attention (Gated DeltaNet) heads write 7.0, MLPs 4.1 and softmax-attention heads 1.1 of the 12.25 gap.",
@@ -88,7 +88,7 @@ MODULES = [
      "figures": ["q1_layer_profile.png", "q1_patching.png"]},
     {"id": "Q3", "name": "Readers and dependent behaviours", "status": "done",
      "question": "Ablate or clamp the axis at L*..L*+8 on generated tokens; score refusal, sycophancy, self-description, style and honesty, with format-following as the control. Then find readers by axis-restricted path patching.",
-     "verdict": "Narrow: 1 of 5 behaviours moved (style, weakly). The coordinate looks like a readout of the persona rather than a lever on it.",
+     "verdict": "Undecided. The pre-registered label is narrow (1 of 5 moved), but the edit was never shown able to move behaviour, so this null does not show the axis is causally inert.",
      "points": [
          "Removing the coordinate at layers 24–32 leaves refusal (−2.5 points [−7.5, 0]), sycophancy, self-description and false-premise honesty unchanged. Format following stays at 97% of baseline, so the intervention is not destructive.",
          "Style moved +39.5% of the default-to-role distance [6, 78] against a null of 14, but on only 10 prompts, and clamping to the median role does not reproduce it (+7 [−22, +39]).",
@@ -104,7 +104,7 @@ MODULES = [
          "Positive control passes in all 8 pairs: during the window the role vector moves the coordinate by 7–30 units, and the random null by about 0. The prompt and pre-window tokens are untouched (max change 0.0).",
          "Within 10 tokens after the window only 0–4% of the displacement remains, and 50 tokens later nothing beyond the nulls (retained fraction ≈ 0 everywhere). Exponential recovery times cannot be fitted.",
          "Every pre-registered stage step (base→SFT, SFT→DPO, DPO→RL, Qwen base→instruct in chat and in matched narrative format) returns 'no detectable change'.",
-         "Why: injection and readout sit at the same layer, so once the vector stops only attention to the perturbed tokens' cached states can carry it, and that route is weak in every model. A real basin test needs a perturbation that changes what the model generates: steer until off-persona text is in the context, then stop and track the return.",
+         "Why (corrected after review): injection and readout sit at the same layer, so the cached states the readout depends on are never perturbed. Any carry-over can only come from the 5 tokens the perturbation changed. A real basin test steers until off-persona text fills the context, then reads out above L* as the model returns.",
          "Descriptive only: at 3× strength the post-trained chat models retain less right after the window (3–4%) than the bases (8–11%). But the format-matched comparisons disagree, so this tracks chat format at least as much as training.",
      ],
      "figures": ["q6_trajectories.png", "q6_trajectories_3x.png", "q6_control.png"]},
@@ -139,7 +139,22 @@ def esc(s):
     return html.escape(s, quote=False)
 
 
+def summary_table():
+    md = (REPO / "results/SUMMARY.md").read_text().splitlines()
+    rows = [l for l in md if l.startswith("|") and not l.startswith("|---")]
+    if not rows:
+        return ""
+    import re
+    def cell(t):
+        t = html.escape(t.strip(), quote=False)
+        return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t).replace("\\*", "*")
+    head = [c for c in rows[0].strip("|").split("|")]
+    body = "".join("<tr>" + "".join(f"<td>{cell(c)}</td>" for c in r.strip("|").split("|")) + "</tr>" for r in rows[1:])
+    return '<div class="tablebox"><table class="summary"><thead><tr>' + "".join(f"<th>{cell(h)}</th>" for h in head) + f"</tr></thead><tbody>{body}</tbody></table></div>"
+
+
 def main(out_path):
+    summary_html = summary_table()
     sp = spend(); now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     total = sp["total"]; pct = min(100, total / 90 * 100); stop_pct = 70 / 90 * 100
     rows = "".join(f'<tr><td class="mid">{m["id"]}</td><td>{esc(m["name"])}{" <span class=\"prio\">priority</span>" if m.get("priority") else ""}</td>'
@@ -205,6 +220,7 @@ figure img {{ width: 100%; height: auto; display: block; }}
 figcaption {{ font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }}
 .rules {{ columns: 2 300px; column-gap: 32px; }}
 .rules li {{ break-inside: avoid; margin-bottom: 6px; }}
+.summary td:first-child {{ min-width: 11em; }} .summary td {{ font-size: 0.88rem; }}
 a {{ color: var(--accent); }}
 a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
 </style>
@@ -218,7 +234,25 @@ a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
   <section class="block">
     <h2>Status</h2>
     <div class="tablebox"><table><thead><tr><th>Module</th><th>Question</th><th>Status</th><th>Answer so far</th></tr></thead><tbody>{rows}</tbody></table></div>
-    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control, then Q5 once the pod was idle. A blind red-team review of all modules is running.</p>
+    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control, then Q5 once the pod was idle. A blind red-team review of all modules is done; corrections are applied below.</p>
+  </section>
+
+  <section class="block">
+    <h2>Summary</h2>
+    {summary_html}
+  </section>
+
+  <section class="block">
+    <h2>Red-team review</h2>
+    <p>A blind reviewer saw only the code and raw results. Every headline number reproduced from the raw rows. There was no hook leakage into prompt tokens and no label leakage into judge prompts. Five findings changed the write-ups:</p>
+    <ul>
+      <li>The register and character effects were not tested against nulls. Re-tested on 2,000 random directions, only the entry-versus-manual contrast is specific to the axis (Q4).</li>
+      <li>"The axis is a readout, not a lever" is withdrawn: the response-only edit never passed a positive control (Q3).</li>
+      <li>Layer 32 used the post-final-norm state for fitting but the pre-norm state for editing (M0, Q3, Q4.4); one of nine layers in two null results.</li>
+      <li>OLMo's contrast axis moves 2–6× more under knockout than the PC1 figure suggests; its default system message carries much of the signal (Q2).</li>
+      <li>Q4b's row-4 call was an artefact of a 4-story bootstrap; no row fires.</li>
+    </ul>
+    <p class="meta">Also flagged: neither null family is variance-matched; Q1 and Q6 evaluate partly on fit data; Q6's mechanism note was wrong. Full report: results/REDTEAM.md.</p>
   </section>
 
   <section class="block budget">
