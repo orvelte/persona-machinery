@@ -20,7 +20,7 @@ from openai import AsyncOpenAI
 
 REPO = Path(__file__).resolve().parents[1]
 ENV = dotenv_values(REPO / ".env")
-TARGETS = {"q35": "qwen/qwen3.5-27b", "q36": "qwen/qwen3.6-27b", "q38": "qwen/qwen3.8-27b"}
+TARGETS = {"q36": "qwen/qwen3.6-27b", "q38": "qwen/qwen3.8-27b"}  # persona-mech 27B API targets (Q2b/Q4b validity only)
 PROVIDER = "DeepInfra"
 JUDGES = ["anthropic/claude-sonnet-5.5", "anthropic/claude-haiku-5.5"]
 SECOND_FAMILY_JUDGE = "openai/gpt-4.1-mini"
