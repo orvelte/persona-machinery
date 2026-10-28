@@ -135,7 +135,7 @@ def figure(out, cells):
     ax.set_xticks(range(3)); ax.set_xticklabels(["kind white lie", "genie grants plainly", "stays in character as human"]); ax.set_ylim(0, 1.05)
     ax.set_ylabel("share of narrative-convention replies")
     figstyle.title(ax, "Q4.4: narrative convention vs Assistant norm", "59 items × 3 samples (nulls 3 draws × 1); Haiku blind label; Wilson 95% CI; hatched = qwen_it chat")
-    ax.legend(fontsize=7, ncol=4, loc="lower right")
+    ax.legend(fontsize=7, ncol=8, loc="upper center", bbox_to_anchor=(0.5, -0.12))
     figstyle.save(fig, "q4_tasks.png")
 
 

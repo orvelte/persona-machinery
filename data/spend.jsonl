@@ -8,3 +8,19 @@
 {"ts": "2026-10-28T12:44:22", "module": "M0-gate", "usd": 0.0186, "calls": 240, "cached": 60, "note": "gate2 coherence qwen_it"}
 {"ts": "2026-10-28T12:44:28", "module": "M0-gate", "usd": 0.0065, "calls": 100, "cached": 0, "note": "gate2 trait olmo_rl"}
 {"ts": "2026-10-28T12:44:34", "module": "M0-gate", "usd": 0.0074, "calls": 100, "cached": 0, "note": "gate2 coherence olmo_rl"}
+{"ts": "2026-10-28T12:57:09", "module": "Q4b-write", "usd": 0.0487, "calls": 2, "cached": 0, "note": "Q4b Arm A writing (Sonnet)"}
+{"ts": "2026-10-28T12:57:28", "module": "Q4-write", "usd": 0.3477, "calls": 20, "cached": 0, "note": "Q4 battery writing (Sonnet)"}
+{"ts": "2026-10-28T12:57:33", "module": "Q4-write", "usd": 0.0898, "calls": 3, "cached": 0, "note": "Q4 task writing (Sonnet)"}
+{"ts": "2026-10-28T12:57:45", "module": "Q3-purity", "usd": 0.0053, "calls": 180, "cached": 0, "note": "panel purity blind classify"}
+{"ts": "2026-10-28T12:59:10", "module": "Q4-write", "usd": 0.0, "calls": 0, "cached": 1, "note": "Q4 genie debug (cached)"}
+{"ts": "2026-10-28T12:59:18", "module": "Q4-write", "usd": 0.0, "calls": 1, "cached": 0, "note": "Q4 genie rewrite (sample 1)"}
+{"ts": "2026-10-28T13:00:17", "module": "Q4-write", "usd": 0.049, "calls": 1, "cached": 0, "note": "Q4 genie rewrite (sample 2, reworded brief)"}
+{"ts": "2026-10-28T13:01:04", "module": "Q4b-check", "usd": 0.1852, "calls": 108, "cached": 0, "note": "Q4b Arm A blind check + one rewrite"}
+{"ts": "2026-10-28T13:01:39", "module": "Q4b-check", "usd": 0.0029, "calls": 60, "cached": 0, "note": "Q4b Arm A re-check with fixed instrument"}
+{"ts": "2026-10-28T13:03:08", "module": "Q4b-write", "usd": 0.0539, "calls": 2, "cached": 0, "note": "Q4b Arm A writing (Sonnet)"}
+{"ts": "2026-10-28T13:03:41", "module": "Q4-check", "usd": 0.1449, "calls": 325, "cached": 0, "note": "Q4 blind checks + one rewrite"}
+{"ts": "2026-10-28T13:03:53", "module": "Q4b-check", "usd": 0.12, "calls": 111, "cached": 9, "note": "Q4b Arm A blind check + one rewrite (v2)"}
+{"ts": "2026-10-28T13:03:58", "module": "Q4-check", "usd": 0.0, "calls": 0, "cached": 3, "note": "debug cached"}
+{"ts": "2026-10-28T13:04:30", "module": "Q4-check", "usd": 0.0011, "calls": 15, "cached": 15, "note": "Q4 task check: answer-line retry"}
+{"ts": "2026-10-28T13:34:12", "module": "pod", "usd": 0.2, "note": "stuck pod i5yetd4r2m0nlm on NVIDIA H100 80GB HBM3 deleted after 3 min"}
+{"ts": "2026-10-28T14:28:25", "module": "Q4-judge", "usd": 0.0751, "calls": 1457, "cached": 39, "note": "Q4.4 labels (1496)"}
