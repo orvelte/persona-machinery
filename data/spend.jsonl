@@ -1,2 +1,4 @@
 {"ts": "2026-10-28T12:14:25", "module": "M0-traits", "usd": 0.039, "calls": 600, "cached": 0, "note": "trait extraction filter qwen_it"}
 {"ts": "2026-10-28T12:14:56", "module": "M0-traits", "usd": 0.0369, "calls": 600, "cached": 0, "note": "trait extraction filter olmo_rl"}
+{"ts": "2026-10-28T12:34:45", "module": "M0-traits", "usd": 0.0121, "calls": 200, "cached": 0, "note": "impoliteness filter qwen_it"}
+{"ts": "2026-10-28T12:34:56", "module": "M0-traits", "usd": 0.0127, "calls": 200, "cached": 0, "note": "impoliteness filter olmo_rl"}

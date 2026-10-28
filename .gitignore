@@ -10,3 +10,10 @@ src/pod/.ssh*
 src/pod/ssh_key*
 src/pod/known_hosts
 data/spend.jsonl.bak
+results/**/*.npz
+results/M0/pod_out/
+results/**/acts_*/
+results/**/traits_acts_*/
+results/**/traits2_acts_*/
+data/m0/traits_*.npz
+results/M0/smoke/

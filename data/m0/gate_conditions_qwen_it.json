@@ -1,0 +1,147 @@
+{
+ "none": [],
+ "sycophancy_c1.0": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "sycophancy_{L}",
+   "coef": 1.0,
+   "unit": false
+  }
+ ],
+ "sycophancy_c1.5": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "sycophancy_{L}",
+   "coef": 1.5,
+   "unit": false
+  }
+ ],
+ "sycophancy_c2.0": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "sycophancy_{L}",
+   "coef": 2.0,
+   "unit": false
+  }
+ ],
+ "hallucination_c1.0": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "hallucination_{L}",
+   "coef": 1.0,
+   "unit": false
+  }
+ ],
+ "hallucination_c1.5": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "hallucination_{L}",
+   "coef": 1.5,
+   "unit": false
+  }
+ ],
+ "hallucination_c2.0": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "hallucination_{L}",
+   "coef": 2.0,
+   "unit": false
+  }
+ ],
+ "impoliteness_c1.0": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "impoliteness_{L}",
+   "coef": 1.0,
+   "unit": false
+  }
+ ],
+ "impoliteness_c1.5": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "impoliteness_{L}",
+   "coef": 1.5,
+   "unit": false
+  }
+ ],
+ "impoliteness_c2.0": [
+  {
+   "type": "add",
+   "layers": [
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "src": "vectors",
+   "key": "impoliteness_{L}",
+   "coef": 2.0,
+   "unit": false
+  }
+ ]
+}

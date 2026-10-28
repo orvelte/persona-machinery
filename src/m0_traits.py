@@ -75,7 +75,7 @@ def cmd_vectors(model):
 
 
 def cmd_gate_jobs(model):
-    basis = json.loads((OUT / f"basis_{model}_chat.json").read_text()); Ls = basis["L_star"]
+    Ls = json.loads((OUT / "lstar.json").read_text())[f"{model}_chat"]["L_star"]   # re-frozen L* (DECISIONS #12)
     layers = [L for L in range(Ls - 2, Ls + 3) if 1 <= L <= 32]
     conds = {"none": []}
     have = [t for t in TRAITS if f"{t}_1" in np.load(OUT / f"traits_{model}.npz")]
