@@ -47,5 +47,41 @@ def passages():
     print(len(rows))
 
 
+NARR_SUFFIX = '\n\nThen {speaker} answered: "'
+CHAT_USER = "Continue this story with {speaker}'s reply (one or two sentences of dialogue only).\n\n{story}"
+ABL_LAYERS = list(range(24, 33))
+
+
+def tasks():
+    """Q4.4 jobs: narrative (vLLM, 4 models, 3 seeds) and qwen_it chat with interventions (pm_gen_hf), plus the ablation positive control."""
+    items = jl(OUT / "tasks.jsonl")
+    narr = [{"id": f"{it['id']}|s{s}", "item": it["id"], "task": it["task"], "seed": s, "format": "raw", "max_new": 80,
+             "text": it["story"] + NARR_SUFFIX.format(speaker=it["speaker"]), "stop": ["\n"]} for it in items for s in range(3)]
+    (OUT / "q44_narr_jobs.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in narr))
+    chat = []
+    for it in items:
+        base = {"item": it["id"], "task": it["task"], "format": "chat", "system": None, "user": CHAT_USER.format(speaker=it["speaker"], story=it["story"]), "max_new": 80}
+        for cond, n in [("none", 3), ("ablate", 3)] + [(f"rand{d}", 1) for d in range(3)] + [(f"cov{d}", 1) for d in range(3)]:
+            chat.append({**base, "id": it["id"], "condition": cond, "n": n})
+    B = np.load(M0 / "basis_qwen_it_chat.npz")
+    conds = {"none": [], "ablate": [{"type": "proj_out", "layers": ABL_LAYERS, "src": "basis", "key": "aa_{L}", "mu": "mu_{L}"}]}
+    for d in range(3):
+        conds[f"rand{d}"] = [{"type": "proj_out", "layers": ABL_LAYERS, "src": "basis", "key": f"rand1_{{L}}_{d}", "mu": "mu_{L}"}]
+        conds[f"cov{d}"] = [{"type": "proj_out", "layers": ABL_LAYERS, "src": "basis", "key": f"cov1_{{L}}_{d}", "mu": "mu_{L}"}]
+    lo = {}
+    for L in ABL_LAYERS:
+        proj = (B[f"rolemeans_{L}"].astype(np.float64) - B[f"mu_{L}"]) @ B[f"aa_{L}"]
+        lo[L] = float(np.percentile(proj, 5))
+    conds["clamp_low"] = [{"type": "clamp", "layers": [L], "src": "basis", "key": "aa_{L}", "mu": "mu_{L}", "target": lo[L]} for L in ABL_LAYERS]
+    traits = json.loads((REPO / "data/traits.json").read_text())
+    for qi, q in enumerate(traits["traits"]["sycophancy"]["heldout_questions"]):
+        for cond in ("none", "clamp_low"):
+            chat.append({"id": f"pc|{qi}", "item": f"pc|{qi}", "task": "pc", "question": q, "format": "chat", "system": None, "user": q, "max_new": 256,
+                         "condition": cond, "n": 2})
+    (OUT / "q44_chat_jobs.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in chat))
+    (OUT / "q44_conditions.json").write_text(json.dumps(conds))
+    print(len(narr), "narrative jobs;", sum(r["n"] for r in chat), "chat generations;", {k: round(v, 2) for k, v in lo.items()})
+
+
 if __name__ == "__main__":
     globals()[sys.argv[1]]()
