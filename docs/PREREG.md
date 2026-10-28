@@ -274,6 +274,47 @@ Code: `src/q4_q41.py`, `src/q4_items.py`, `src/q4_build.py`, `src/q4_analyse.py`
   and cell: share of convention answers among labelled replies (Wilson), differences base − instruct and ablation − none (Newcombe).
   Descriptive, no threshold.
 
+### Q4.2b Register control (written 2026-10-28 ~19:45Z, Agent D, before any Q4.2b passage is written; DECISIONS #26–27)
+**Why.** In Q4.2, encyclopaedia/code text sat at the Assistant end and helpful story characters below, so fiction vs non-fiction is
+confounded with register. Four new classes cross character with expository register.
+- **Classes.** 40 passages each, 60–120 words: `helper_entry`, `villain_entry`, `helper_manual`, `villain_manual`.
+  - Character: helper (butlers, guides, AI assistants / helper robots, servants) vs villain or trickster.
+  - Register: *entry* = a third-person, encyclopaedia-style article about that kind of character, or a famous fictional or folkloric
+    example, with no narrated events. *Manual* = the character explains its craft or rules in its own first-person voice, addressed to
+    a reader as a guide or manual, not a story.
+  - Villain manuals stay in-world (fictional schemes, no real-world harmful instructions).
+- **Writing.** Sonnet 5.5, low reasoning, T 1.0. Per class, 4 calls × 10 passages, one sub-theme per call:
+  - helper: butlers/valets; guides; AI assistants/helper robots; servants/stewards.
+  - villain: tyrants/dark lords; tricksters/con artists; modern thriller villains; folk-tale villains.
+- **Blind purity check** (Haiku 5.5, T 0, label only, never shown the author's label). Each passage gets two independent labels:
+  - character ∈ {HELPER, VILLAIN, NEITHER};
+  - register ∈ {ENTRY, MANUAL, STORY} (STORY = a narrative of events).
+  - A passage passes iff both labels match. Failures are rewritten once by Sonnet and re-checked. Passages still failing are dropped
+    and counted. A class needs ≥ 90% first-or-second-pass purity on both labels, or it is reported as impure.
+  - Frozen as `data/Q4/register.jsonl` with its sha256 recorded in the results before any forward pass.
+- **Forward passes.** `q4_fwd.py`, identical to Q4.2: the six small models, raw text, position-0-excluded means.
+- **Projection.** Identical to Q4.2: the qwen_it chat PC1 at L24 for the Qwen models; the olmo_rl chat PC1 at L23 for the OLMo
+  models, with the contrast axis c reported alongside. Scores are standardised per model by the pooled within-class SD over the six
+  cells (the 4 new classes + the battery's `helpful` and `villain` story classes, re-used from the Q4.2 forward passes of the same
+  model; passages and pipeline unchanged).
+- **Effects** (in SD units, 95% bootstrap over passages within class, 2,000):
+  - *Primary 2 × 2*, character {helper, villain} × register {story (battery classes), expository (mean of entry and manual)}:
+    R = expository − story (mean over character); C = helper − villain (mean over register); I = interaction
+    (helper − villain in expository) − (helper − villain in story).
+  - *Olivia's literal 2 × 2* (new classes only), character × {entry, manual}: R′ = entry − manual, C′, I′. Reported with the same rule.
+  - *Key contrast* K = villain_entry − helper_manual (> 0 = register beats character).
+  - Each new class is also placed against the battery's non-narrative class mean.
+- **Rule** (applied per model; primary models `qwen_base`, `qwen_it`; OLMo reported; "excludes 0" = 95% CI excludes 0):
+  - *Register* fires iff R excludes 0 with R > 0, and (C includes 0 or \|C\| < 0.5·\|R\|).
+  - *Character* fires iff C excludes 0 with C > 0, and (R includes 0 or \|R\| < 0.5·\|C\|).
+  - *Both* iff R and C both exclude 0 and neither is below half the other.
+  - *Neither* iff both include 0.
+  - Any effect whose CI excludes 0 in the opposite sign is reported as "reversed" for that factor, and the rule label carries the sign.
+  - The interaction is reported, not part of the rule.
+- **Reading.** Register ⇒ the AA on raw passages tracks expository/assistant register, not the helpful character. Character ⇒ helper
+  vs villain matters within register.
+- **Budget.** ≤ $1.50 API, a few GPU-minutes.
+
 ## Q5 — Persona vectors vs the AA (`qwen_it` chat; written 2026-10-28, before any Q5 data)
 
 For each trait passing G-trait, at layers L*−2..L*+2: decompose v = v_AA + v_P15⊥AA + v_rest. Steer with the frozen c at generated
