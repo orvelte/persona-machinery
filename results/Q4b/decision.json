@@ -90,7 +90,7 @@
    }
   },
   "armA_state": "\u2248 0",
-  "armB_key": "qwen_base|base",
+  "armB_key": "qwen_base|esc",
   "armB_state": "not measurable (gate failed)",
   "row": 4,
   "reading": "The convention is about people; 3.8 extends it to itself",
@@ -187,7 +187,7 @@
    }
   },
   "armA_state": "\u2248 0",
-  "armB_key": "olmo_base|base",
+  "armB_key": "olmo_base|esc",
   "armB_state": "not measurable (gate failed)",
   "row": null,
   "reading": null,
