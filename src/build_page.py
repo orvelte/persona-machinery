@@ -99,11 +99,11 @@ MODULES = [
      "figures": ["q3_panel.png"]},
     {"id": "Q6", "name": "Does each stage deepen the Assistant basin?", "status": "done",
      "question": "After a 5-token role perturbation, how fast does the axis projection return, and how much displacement remains? Compared across OLMo base → SFT → DPO → RLVR and Qwen3.5-9B base vs instruct. Tests the terraforming hypothesis and the thesis's 'deeper basin' clause.",
-     "verdict": "No detectable deepening at any stage, but this design cannot resolve basin depth: every model snaps back within about one token.",
+     "verdict": "Design could not test basin depth: a same-layer kick that decays within a few tokens measures neither recovery after off-persona context nor the displacement needed to leave the Assistant region. Every model snaps back within about one token.",
      "points": [
          "Positive control passes in all 8 pairs: during the window the role vector moves the coordinate by 7–30 units, and the random null by about 0. The prompt and pre-window tokens are untouched (max change 0.0).",
          "Within 10 tokens after the window only 0–4% of the displacement remains, and 50 tokens later nothing beyond the nulls (retained fraction ≈ 0 everywhere). Exponential recovery times cannot be fitted.",
-         "Every pre-registered stage step (base→SFT, SFT→DPO, DPO→RL, Qwen base→instruct in chat and in matched narrative format) returns 'no detectable change'.",
+         "Every pre-registered stage step (base→SFT, SFT→DPO, DPO→RL, Qwen base→instruct in chat and in matched narrative format) returns the registered label 'no detectable change'; under the basin-depth definition each is 'design could not test'.",
          "Why (corrected after review): injection and readout sit at the same layer, so the cached states the readout depends on are never perturbed. Any carry-over can only come from the 5 tokens the perturbation changed. A real basin test steers until off-persona text fills the context, then reads out above L* as the model returns.",
          "Descriptive only: at 3× strength the post-trained chat models retain less right after the window (3–4%) than the bases (8–11%). But the format-matched comparisons disagree, so this tracks chat format at least as much as training.",
      ],

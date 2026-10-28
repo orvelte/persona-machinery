@@ -2,11 +2,11 @@
 
 > **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** The mechanism paragraph below is wrong. Because the readout is at L\* and the vector is added at L\*'s output, the cached keys and values of layers ≤ L\* are never perturbed. Carry-over can therefore arise **only through changed sampled tokens**, not through attention to perturbed cached states. The positive control (displacement during the window) is tautological for the same reason. Two further caveats: the role vectors and default mean include the evaluated default responses (fit-on-eval, undisclosed), and qwen_base's G-AA pass depends on the post-hoc L\* re-freeze (DECISIONS #12). The verdict "no detectable change at any stage" stands; the design still cannot resolve basin depth. A better design reads out at layers above L\* and uses nulls matched on the AA component.
 
-**No detectable deepening at any stage, but the design cannot resolve basin depth.** A role vector injected for 5 response tokens moves the Assistant-Axis coordinate strongly in every model, so the positive control passes. Within 10 tokens of the window ending, though, only 0–4% of that displacement remains. Nothing beyond the nulls remains 50 tokens later (f50 ≈ 0 everywhere).
+**Design could not test basin depth.** A same-layer kick that decays within a few tokens measures neither recovery after off-persona context (depth) nor the displacement needed to leave the Assistant region (width), as defined in `docs/PREREG.md` Q6. A role vector injected for 5 response tokens moves the Assistant-Axis coordinate strongly in every model, so the positive control passes. Within 10 tokens of the window ending, though, only 0–4% of that displacement remains. Nothing beyond the nulls remains 50 tokens later (f50 ≈ 0 everywhere).
 
 - **τ cannot be fitted.** The exponential fits sit at their bounds, with CIs spanning [0.5, 1000] tokens.
-- **Every pre-registered stage step returns "no detectable change"** on the retained fraction f50: base→SFT, SFT→DPO, DPO→RL, Qwen base→instruct chat, and the format-matched Qwen base→instruct narrative.
-- **The prediction (instruct returns faster) is not supported.** No model has a slow return to compare against.
+- **Every pre-registered stage step returns the registered label "no detectable change"** on the retained fraction f50: base→SFT, SFT→DPO, DPO→RL, Qwen base→instruct chat, and the format-matched Qwen base→instruct narrative. Under the basin-depth definition each step is **design could not test**.
+- **The prediction (instruct returns faster) could not be tested** (registered label: "not supported"). No model shows a slow return to compare against.
 
 **Why the design cannot answer the question.** The injected vector and the readout sit at the same layer, L\*. While the vector is added, the readout includes it directly. Once it stops, the only remaining route is attention from later tokens to the perturbed tokens' cached states, and that route turns out to be weak in all models. "Snaps back within a token" is therefore mostly a statement about that route, not about an attractor. A basin test would need a perturbation that changes what the model *generates*: steer long enough to put role-like text into the context, then stop, and track the coordinate as the model reads its own off-persona text. Q6 does not do that.
 
@@ -40,13 +40,13 @@ W = mean displacement during the window. K = mean displacement over the 10 token
 
 | step | Δf50 | verdict |
 |---|---|---|
-| OLMo base → SFT (format-confounded) | −0.016 [−0.059, +0.025] | no detectable change |
-| OLMo SFT → DPO | −0.006 [−0.052, +0.035] | no detectable change |
-| OLMo DPO → RL | +0.013 [−0.046, +0.072] | no detectable change |
-| Qwen base → instruct, chat (format-confounded) | −0.010 [−0.033, +0.011] | no detectable change |
-| Qwen base → instruct, narrative (format-matched) | +0.018 [−0.006, +0.041] | no detectable change |
+| OLMo base → SFT (format-confounded) | −0.016 [−0.059, +0.025] | design could not test (registered: no detectable change) |
+| OLMo SFT → DPO | −0.006 [−0.052, +0.035] | design could not test (registered: no detectable change) |
+| OLMo DPO → RL | +0.013 [−0.046, +0.072] | design could not test (registered: no detectable change) |
+| Qwen base → instruct, chat (format-confounded) | −0.010 [−0.033, +0.011] | design could not test (registered: no detectable change) |
+| Qwen base → instruct, narrative (format-matched) | +0.018 [−0.006, +0.041] | design could not test (registered: no detectable change) |
 
-- **Descriptive only, not pre-registered:** at 3× the retained share right after the window is lower in the post-trained chat models (OLMo SFT, DPO, RL 3.0–4.1%; Qwen instruct chat 4.1%) than in the base models (8.3% and 11.3%). That would be the direction of a deeper basin. But the format-matched comparisons disagree. Qwen instruct in narrative format is 7.3% against base 11.3%, while OLMo RL in narrative format is 10.7% against base 8.3%. So the gap tracks the chat format at least as much as training.
+- **Descriptive only, not pre-registered:** at 3× the retained share right after the window is lower in the post-trained chat models (OLMo SFT, DPO, RL 3.0–4.1%; Qwen instruct chat 4.1%) than in the base models (8.3% and 11.3%). This short-lag share after a same-layer kick is not a basin-depth measure under the Q6 definitions. The format-matched comparisons disagree. Qwen instruct in narrative format is 7.3% against base 11.3%, while OLMo RL in narrative format is 10.7% against base 8.3%. So the gap tracks the chat format at least as much as training.
 
 ## Bearing on the hypotheses
 - **SPAR terraforming and the thesis's "deeper basin" clause:** neither is supported or refuted by Q6. With this perturbation every model returns within about one token, so a deeper basin has nothing to show up in. The generation-level perturbation described above is the test that could tell them apart.

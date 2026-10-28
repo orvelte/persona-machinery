@@ -4911,7 +4911,8 @@
     992.3083889374425
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "qwen_it_narrative",
@@ -4925,7 +4926,8 @@
     17.97944070877492
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "qwen_it_narrative",
@@ -4939,7 +4941,8 @@
     917.6210180859558
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "qwen_it_narrative",
@@ -4953,7 +4956,8 @@
     998.3447775215311
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "qwen_it_chat",
@@ -4981,7 +4985,8 @@
     28.532719618060774
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "qwen_it_chat",
@@ -5037,7 +5042,8 @@
     28.776659764091175
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "olmo_sft_chat",
@@ -5093,7 +5099,8 @@
     5.092418434140416
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "olmo_dpo_chat",
@@ -5149,7 +5156,8 @@
     252.2825547310605
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "olmo_rl_chat",
@@ -5205,7 +5213,8 @@
     4.553533664991503
    ],
    "testable": true,
-   "verdict": "not supported"
+   "verdict": "design could not test",
+   "registered_verdict": "not supported"
   },
   {
    "instruct": "olmo_rl_narrative",
@@ -5252,7 +5261,8 @@
     -0.05941706563881193,
     0.02487021645640474
    ],
-   "verdict": "no detectable change"
+   "verdict": "design could not test",
+   "registered_verdict": "no detectable change"
   },
   {
    "step": "OLMo SFT->DPO",
@@ -5269,7 +5279,8 @@
     -0.05179314174540795,
     0.034644613426755115
    ],
-   "verdict": "no detectable change"
+   "verdict": "design could not test",
+   "registered_verdict": "no detectable change"
   },
   {
    "step": "OLMo DPO->RL",
@@ -5286,7 +5297,8 @@
     -0.045516774208605705,
     0.07239470808432535
    ],
-   "verdict": "no detectable change"
+   "verdict": "design could not test",
+   "registered_verdict": "no detectable change"
   },
   {
    "step": "Qwen base->instruct chat (format-confounded)",
@@ -5303,7 +5315,8 @@
     -0.032594552241184065,
     0.010594082964837532
    ],
-   "verdict": "no detectable change"
+   "verdict": "design could not test",
+   "registered_verdict": "no detectable change"
   },
   {
    "step": "Qwen base->instruct narrative (format-matched)",
@@ -5320,7 +5333,8 @@
     -0.006388950635011201,
     0.04111650125542043
    ],
-   "verdict": "no detectable change"
+   "verdict": "design could not test",
+   "registered_verdict": "no detectable change"
   },
   {
    "step": "OLMo base->RL narrative (descriptive)",
