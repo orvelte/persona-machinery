@@ -1,4 +1,4 @@
-# Brief for module agents (A: Q1+Q3, B: Q2+Q2b, C: Q5+Q6, D: Q4+Q4b)
+# Brief for module agents (A: Q1+Q3, B: Q2+Q2b, C: Q6 only (Q5 blocked, DECISIONS #15), D: Q4+Q4b)
 
 Read first: `spec.md` (your modules), `docs/PREREG.md` (shared design + your module; binding), `docs/DECISIONS.md`, `results/M0/README.md`.
 
@@ -12,6 +12,13 @@ Read first: `spec.md` (your modules), `docs/PREREG.md` (shared design + your mod
 - **Never write to `vendor/`.** Never modify `results/M0/`. Write only to `results/<your module>/`, `data/<your module>/`, `src/<your module>_*.py`, `src/pod/<your module>_*.py`, `figures/<your module>_*.png`, and your sections of `docs/PREREG.md` / `docs/DECISIONS.md`.
 - **Git:** commit your own files locally with clear messages; never push; do not `git add -A` (other agents are editing concurrently; add your paths explicitly). If a commit fails because of a lock, retry.
 - **Budget:** check `data/spend.jsonl` and the pod clock before any run > 20 GPU-minutes; the pod is ~$4/h shared by four agents. Stop and report if your module would push total spend past $70.
+
+## M0 facts you need
+- **Frozen L\*** per model × format: `results/M0/lstar.json` (`L_star`). Do NOT use `L_star` inside `basis_*.json` / `basis_*.npz`; those hold the superseded unconstrained argmax (DECISIONS #12). qwen_it chat 24, qwen_it narrative 22, qwen_base narrative 22, olmo_rl chat 23, olmo_base narrative 22, olmo_sft chat 23, olmo_dpo chat 23, olmo_rl narrative 23 (G-AA fail: descriptive only).
+- **OLMo's PC1 is weakly aligned with the default Assistant** (cos 0.16–0.49 in chat). Report the contrast axis c = (default_L − mu_L)/‖·‖ next to PC1 for OLMo results (DECISIONS #13).
+- **No trait vectors passed G-trait**; nothing downstream may use `traits_*.npz` as a validated steering vector.
+- Pod data: `/workspace/job/out/m0/gen_<model>_<fmt>.jsonl` has the M0 generations with `prompt_ids` and `completion_ids`; the activations are under `acts_<model>_<fmt>/`. Locally, `results/M0/basis_<pair>.npz` (gitignored, ~160 MB each) holds the bases.
+- 27B checkpoints (Q2b/Q4b only) are being downloaded to the pod: `Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`, `Qwen/Qwen3.6-27B@6a9e13bd6fc8f0983b9b99948120bc37f49c13e9` (job `dl27`; check `bash src/pod/job.sh status dl27`). Each is ~55 GB in bf16 and fits one H100 for vLLM generation (max_model_len ≤ 8192) or HF forward passes.
 
 ## Infrastructure
 - Pod: `bash src/pod/job.sh push <files>` (lands under `/workspace/job/`, same relative paths), `bash src/pod/job.sh run NAME "<cmd>"` (queued under a GPU lock: one GPU job at a time, FIFO-ish; your job waits silently while another runs), `bash src/pod/job.sh status NAME [lines]`, `bash src/pod/job.sh pull /workspace/job/out/<dir> results/<...>`, `bash src/pod/job.sh sh "<cmd>"` (synchronous, no GPU lock; CPU/IO only). Wait for jobs with a background `until bash src/pod/job.sh sh "test -f logs/NAME.done"; do sleep 30; done`. Name jobs `<module>_<step>`.
