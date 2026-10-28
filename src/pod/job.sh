@@ -2,7 +2,8 @@
 # Route to the job pod created by src/pod/pod.py create.
 #   bash src/pod/job.sh setup                 # torch/transformers/vllm versions; pip extras
 #   bash src/pod/job.sh push FILE...          # rsync files/dirs to /workspace/job/
-#   bash src/pod/job.sh run NAME CMD...       # start CMD detached in /workspace/job; log in logs/NAME.log, logs/NAME.done at exit
+#   bash src/pod/job.sh run NAME CMD...       # start CMD detached in /workspace/job under the GPU lock (flock); log in logs/NAME.log, logs/NAME.done at exit
+#   bash src/pod/job.sh bg NAME CMD...        # same without the GPU lock (downloads, CPU work)
 #   bash src/pod/job.sh status NAME           # tail of the log + RUNNING/EXIT
 #   bash src/pod/job.sh pull REMOTE_DIR LOCAL_DIR
 #   bash src/pod/job.sh sh CMD...             # run a command synchronously
@@ -20,6 +21,9 @@ case "${1:-}" in
     shift; "${SSH[@]}" "mkdir -p $J/logs $J/out"
     rsync -rltz --no-owner --no-group -e "$RSH" "$@" "root@$IP:$J/"; echo pushed ;;
   run)
+    name="$2"; shift 2
+    "${SSH[@]}" -n "cd $J && rm -f logs/$name.done && (setsid nohup bash -c 'export HF_HOME=/workspace/hf HF_HUB_ENABLE_HF_TRANSFER=1; flock /workspace/job/gpu.lock bash -c \"$*\" ; echo EXIT=\$? > logs/$name.done' > logs/$name.log 2>&1 < /dev/null &) ; echo started $name" ;;
+  bg)
     name="$2"; shift 2
     "${SSH[@]}" -n "cd $J && rm -f logs/$name.done && (setsid nohup bash -c 'export HF_HOME=/workspace/hf HF_HUB_ENABLE_HF_TRANSFER=1; $* ; echo EXIT=\$? > logs/$name.done' > logs/$name.log 2>&1 < /dev/null &) ; echo started $name" ;;
   status)

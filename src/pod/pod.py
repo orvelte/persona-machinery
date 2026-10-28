@@ -43,7 +43,7 @@ def _key(name: str) -> str:
 def _req(method: str, path: str, body: dict | None = None):
     req = urllib.request.Request(API + path, method=method, data=json.dumps(body).encode() if body is not None else None,
                                  headers={"Authorization": f"Bearer {_key('RUNPOD_API_KEY')}", "Content-Type": "application/json",
-                                          "User-Agent": "personawhitebox-pod/1.0"})
+                                          "User-Agent": "persona-machinery-pod/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             txt = r.read().decode()
@@ -67,12 +67,12 @@ def create(gpu: str | None, volume: int, disk: int, hf_token: bool = True) -> No
     if POD_FILE.exists():
         sys.exit(f"a pod is already recorded ({POD_FILE.read_text().strip()}); terminate it first")
     if not SSH_KEY.exists():
-        subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "personawhitebox-pod", "-f", str(SSH_KEY)], check=True)
+        subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "persona-machinery-pod", "-f", str(SSH_KEY)], check=True)
     env = {"HF_HOME": "/workspace/hf", "HF_HUB_ENABLE_HF_TRANSFER": "1", "PUBLIC_KEY": SSH_KEY.with_suffix(".pub").read_text().strip()}
     if hf_token:
         env["HF_TOKEN"] = _key("HF_TOKEN")
     for g in ([gpu] if gpu else FALLBACK):
-        body = {"name": f"pwb-job{SLOT}", "imageName": IMAGE, "gpuTypeIds": [g], "gpuCount": 1, "cloudType": "SECURE", "computeType": "GPU",
+        body = {"name": f"pm-job{SLOT}", "imageName": IMAGE, "gpuTypeIds": [g], "gpuCount": 1, "cloudType": "SECURE", "computeType": "GPU",
                 "containerDiskInGb": disk, "volumeInGb": volume, "volumeMountPath": "/workspace", "ports": ["22/tcp"], "env": env,
                 "dockerEntrypoint": ["bash", "-c"], "dockerStartCmd": [JOB_START]}
         try:

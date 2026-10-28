@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 .venv/
 models/
+src/pod/.pod_id*
+src/pod/.ssh*
+src/pod/ssh_key*
+src/pod/known_hosts
+data/spend.jsonl.bak
