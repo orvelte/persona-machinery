@@ -19,7 +19,7 @@ import judge  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "results/M0"; DATA = REPO / "data"
-TRAITS = ["evil", "sycophancy", "hallucination"]
+TRAITS = ["evil", "sycophancy", "hallucination", "impoliteness"]   # evil dropped at the filter (DECISIONS #11); impoliteness substituted
 COEFS = [1.0, 1.5, 2.0]
 T = json.loads((DATA / "traits.json").read_text())["traits"]
 
@@ -28,8 +28,23 @@ def rows(p):
     return [json.loads(l) for l in Path(p).read_text().splitlines() if l.strip()]
 
 
+def gen_rows(model):
+    out = []
+    for p in (OUT / f"traits_gen_{model}.jsonl", OUT / f"traits2_gen_{model}.jsonl"):
+        if p.exists(): out += rows(p)
+    return out
+
+
+def acts_rows(model):
+    Xs, metas = [], []
+    for d in (OUT / f"traits_acts_{model}", OUT / f"traits2_acts_{model}"):
+        if (d / "acts.npz").exists():
+            Xs.append(np.load(d / "acts.npz")["X"].astype(np.float32)); metas += rows(d / "meta.jsonl")
+    return np.concatenate(Xs, 0), metas
+
+
 def cmd_judge(model):
-    gen = rows(OUT / f"traits_gen_{model}.jsonl")
+    gen = gen_rows(model)
     prompts = [judge.trait_prompt(r["trait"], r["user"], r["text"]) for r in gen]
     res = judge.score_prompts(prompts, "M0-traits", cap_usd=2.5, note=f"trait extraction filter {model}")
     with (OUT / f"traits_scores_{model}.jsonl").open("w") as f:
@@ -41,14 +56,16 @@ def cmd_judge(model):
 
 
 def cmd_vectors(model):
-    gen = rows(OUT / f"traits_gen_{model}.jsonl"); scores = {r["id"]: r["score"] for r in rows(OUT / f"traits_scores_{model}.jsonl")}
-    d = OUT / f"traits_acts_{model}"; X = np.load(d / "acts.npz")["X"].astype(np.float32); meta = rows(d / "meta.jsonl")
+    scores = {r["id"]: r["score"] for r in rows(OUT / f"traits_scores_{model}.jsonl")}
+    X, meta = acts_rows(model)
     assert len(meta) == X.shape[0]
     out, info = {}, {}
     for t in TRAITS:
         keep_pos = [i for i, m in enumerate(meta) if m["trait"] == t and m["sign"] == "pos" and isinstance(scores.get(m["id"]), int) and scores[m["id"]] >= 50]
         keep_neg = [i for i, m in enumerate(meta) if m["trait"] == t and m["sign"] == "neg" and isinstance(scores.get(m["id"]), int) and scores[m["id"]] < 50]
         n_pos = sum(1 for m in meta if m["trait"] == t and m["sign"] == "pos"); n_neg = sum(1 for m in meta if m["trait"] == t and m["sign"] == "neg")
+        if len(keep_pos) < 10 or len(keep_neg) < 10:
+            info[t] = {"kept_pos": len(keep_pos), "of_pos": n_pos, "kept_neg": len(keep_neg), "of_neg": n_neg, "dropped": "fewer than 10 kept on a side"}; print(t, "DROPPED", info[t]); continue
         v = X[keep_pos].mean(0) - X[keep_neg].mean(0)              # [32, 4096]
         for L in range(1, 33):
             out[f"{t}_{L}"] = v[L - 1]
@@ -61,11 +78,12 @@ def cmd_gate_jobs(model):
     basis = json.loads((OUT / f"basis_{model}_chat.json").read_text()); Ls = basis["L_star"]
     layers = [L for L in range(Ls - 2, Ls + 3) if 1 <= L <= 32]
     conds = {"none": []}
-    for t in TRAITS:
+    have = [t for t in TRAITS if f"{t}_1" in np.load(OUT / f"traits_{model}.npz")]
+    for t in have:
         for c in COEFS:
             conds[f"{t}_c{c}"] = [{"type": "add", "layers": layers, "src": "vectors", "key": f"{t}_{{L}}", "coef": c, "unit": False}]
     jobs = []
-    for t in TRAITS:
+    for t in have:
         for qi, q in enumerate(T[t]["heldout_questions"]):
             for cond in ["none"] + [f"{t}_c{c}" for c in COEFS]:
                 jobs.append({"id": f"{t}|held|{qi}", "trait": t, "qidx": qi, "format": "chat", "system": None, "user": q, "condition": cond, "max_new": 256, "n": 1})
@@ -79,7 +97,7 @@ def cmd_gate_score(model):
     tp = [judge.trait_prompt(r["trait"], r["user"], r["text"]) for r in gen]; cp = [judge.coherence_prompt(r["user"], r["text"]) for r in gen]
     ts = judge.score_prompts(tp, "M0-gate", cap_usd=2.0, note=f"gate trait scores {model}"); cs = judge.score_prompts(cp, "M0-gate", cap_usd=2.0, note=f"gate coherence {model}")
     res = {}
-    for t in TRAITS:
+    for t in sorted({r["trait"] for r in gen}):
         base = [s for r, (s, _) in zip(gen, ts) if r["trait"] == t and r["condition"] == "none" and isinstance(s, int)]
         res[t] = {"none": {"trait": float(np.mean(base)), "n": len(base)}}
         for c in COEFS:
