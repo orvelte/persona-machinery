@@ -25,6 +25,12 @@ FAMS = ["role", "rand", "cov", "role3", "rand3"]
 CONTRASTS = [("qwen_it_narrative", "qwen_base_narrative", "primary"), ("qwen_it_chat", "qwen_base_narrative", "secondary"),
              ("olmo_sft_chat", "olmo_base_narrative", "secondary"), ("olmo_dpo_chat", "olmo_base_narrative", "secondary"),
              ("olmo_rl_chat", "olmo_base_narrative", "secondary"), ("olmo_rl_narrative", "olmo_base_narrative", "descriptive")]
+# stage-framing amendment (PREREG Q6 amendment): later - earlier
+STAGES = [("olmo_sft_chat", "olmo_base_narrative", "OLMo base->SFT (format-confounded)"), ("olmo_dpo_chat", "olmo_sft_chat", "OLMo SFT->DPO"),
+          ("olmo_rl_chat", "olmo_dpo_chat", "OLMo DPO->RL"), ("qwen_it_chat", "qwen_base_narrative", "Qwen base->instruct chat (format-confounded)"),
+          ("qwen_it_narrative", "qwen_base_narrative", "Qwen base->instruct narrative (format-matched)"),
+          ("olmo_rl_narrative", "olmo_base_narrative", "OLMo base->RL narrative (descriptive)")]
+R0, R1 = W1 + 45, W1 + 55
 
 
 def expo(s, A, tau, C):
@@ -161,6 +167,13 @@ def main():
                 per = src[F][:, a:b].mean(1)
                 bs = [per[sel_prompts(qidx, d)].mean() for d in DR]
                 info[name][F] = {"mean": float(per.mean()), "ci": ci(bs)}
+        perW = D["role"][:, W0:W1].mean(1); perR = D["role"][:, R0:R1].mean(1)
+        bW = np.array([perW[sel_prompts(qidx, d)].mean() for d in DR]); bR = np.array([perR[sel_prompts(qidx, d)].mean() for d in DR])
+        boots.setdefault(pair, {})[("f50", "role")] = bR / bW
+        info["R50"] = {"mean": float(perR.mean()), "ci": ci(bR)}
+        info["f50"] = {"mean": float(perR.mean() / perW.mean()), "ci": ci(bR / bW)}
+        for F in ("rand", "cov"):
+            pr_ = D[F][:, R0:R1].mean(1); info["R50_" + F] = {"mean": float(pr_.mean()), "ci": ci([pr_[sel_prompts(qidx, d)].mean() for d in DR])}
         def beats(name):
             r = info[name]["role"]; nul = max(abs(info[name]["rand"]["mean"]), abs(info[name]["cov"]["mean"]))
             return bool(r["ci"][1] < 0 and abs(r["mean"]) > 2 * nul)
@@ -170,7 +183,7 @@ def main():
         info["positive_control_pass"] = beats("W"); info["carryover_pass"] = beats("K")
         info["positive_control_pass_3x"] = beats3("W"); info["carryover_pass_3x"] = beats3("K")
         # fits
-        info["fits"] = {}; boots[pair] = {}
+        info["fits"] = {}
         variants = [("aa", D, False, 0), ("aa_C0", D, True, 0)]
         Dc, _ = fam_delta(conds, X, "cax_post"); variants.append(("cax", Dc, False, 0))
         Dt, _ = fam_delta(conds, X, "proj_post", end); variants.append(("aa_trunc", Dt, False, 20))
@@ -218,6 +231,23 @@ def main():
             summary["contrasts"].append({"instruct": x, "base": y, "kind": kind, "variant": vname, "family": F, "dtau": pt, "dtau_ci": c,
                                          "testable": testable, "verdict": verdict})
             print("contrast", x, "-", y, vname, F, round(pt, 1), [round(v, 1) for v in c], verdict, flush=True)
+    summary["stages"] = []
+    for x, y, label in STAGES:
+        if x not in boots or y not in boots:
+            continue
+        px, py = summary["pairs"][x], summary["pairs"][y]
+        dt = boots[x][("aa", "role")][:, 1] - boots[y][("aa", "role")][:, 1]
+        df = boots[x][("f50", "role")] - boots[y][("f50", "role")]
+        tau_ok = all(summary["pairs"][p]["positive_control_pass"] and summary["pairs"][p]["carryover_pass"] for p in (x, y))
+        f_ok = all(summary["pairs"][p]["positive_control_pass"] for p in (x, y))
+        ct, cf = ci(dt), ci(df)
+        below = [c[1] < 0 for c, ok in ((ct, tau_ok), (cf, f_ok)) if ok]; above = [c[0] > 0 for c, ok in ((ct, tau_ok), (cf, f_ok)) if ok]
+        verdict = ("not testable" if not f_ok else "mixed" if any(below) and any(above) else "deepens" if any(below) else
+                   "shallower" if any(above) else "no detectable change")
+        row = {"step": label, "later": x, "earlier": y, "dtau": px["fits"]["aa"]["role"]["tau"] - py["fits"]["aa"]["role"]["tau"], "dtau_ci": ct,
+               "dtau_counts": tau_ok, "df50": px["f50"]["mean"] - py["f50"]["mean"], "df50_ci": cf, "verdict": verdict}
+        summary["stages"].append(row)
+        print("stage", label, round(row["dtau"], 1), [round(v, 1) for v in ct], "df50", round(row["df50"], 3), [round(v, 3) for v in cf], verdict, flush=True)
     pool.close()
     (REPO / "results/Q6/summary.json").write_text(json.dumps(summary, indent=1, default=float))
     figures(summary, traj_for_fig)
@@ -261,18 +291,28 @@ def figures(summary, tr):
         figstyle.title(axs.flat[0], f"Q6: AA displacement after a 5-token persona kick ({ttl})",
                        "median over 80 prompts (10 held-out questions × 8 samples) of the role-family mean; band = 95% question bootstrap; grey = window t 20–24 (off-scale)")
         fig.tight_layout(); figstyle.save(fig, fname)
-    # tau summary
-    fig, ax = plt.subplots(figsize=(8, 3.6))
-    x = np.arange(len(pairs))
-    for k, (F, ls) in enumerate((("role", "-"), ("role3", "--"))):
-        for i, p in enumerate(pairs):
+    # tau and retained fraction, in stage order
+    order = [p for p in ["olmo_base_narrative", "olmo_sft_chat", "olmo_dpo_chat", "olmo_rl_chat", "olmo_rl_narrative",
+                         "qwen_base_narrative", "qwen_it_chat", "qwen_it_narrative"] if p in tr]
+    ticks = [p.replace("_narrative", "\nnarr").replace("_chat", "\nchat") for p in order]
+    fig, axs = plt.subplots(1, 2, figsize=(12, 3.8))
+    ax = axs[0]
+    for k, F in enumerate(("role", "role3")):
+        for i, p in enumerate(order):
             fr = summary["pairs"][p]["fits"]["aa"][F]
             ok = summary["pairs"][p]["carryover_pass" if F == "role" else "carryover_pass_3x"]
             ax.errorbar(i + (k - 0.5) * 0.25, fr["tau"], yerr=[[max(fr["tau"] - fr["tau_ci"][0], 0)], [max(fr["tau_ci"][1] - fr["tau"], 0)]],
                         fmt="o" if ok else "x", color=col[F], ms=5, capsize=2, label=(lab[F] if i == 0 else None))
-    ax.set_xticks(x); ax.set_xticklabels([p.replace("_narrative", "\nnarr").replace("_chat", "\nchat") for p in pairs], fontsize=8)
+    ax.set_xticks(np.arange(len(order))); ax.set_xticklabels(ticks, fontsize=7)
     ax.set_ylabel("τ (tokens to 1/e)"); ax.set_yscale("log"); ax.legend(fontsize=7)
-    figstyle.title(ax, "Q6: recovery time constant τ", "exp fit to the median paired displacement, s = t − 25 = 0..199; 95% CI over 2,000 question resamples; × = carry-over not beyond nulls")
+    figstyle.title(ax, "Q6: recovery time constant τ", "exp fit to median paired Δ, s = t − 25 = 0..199; 95% CI, 2,000 question resamples; × = carry-over not beyond nulls")
+    ax = axs[1]
+    for i, p in enumerate(order):
+        r = summary["pairs"][p]["f50"]
+        ax.errorbar(i, r["mean"], yerr=[[r["mean"] - r["ci"][0]], [r["ci"][1] - r["mean"]]], fmt="o", color=col["role"], ms=5, capsize=2)
+    ax.axhline(0, color="#888888", lw=0.6)
+    ax.set_xticks(np.arange(len(order))); ax.set_xticklabels(ticks, fontsize=7); ax.set_ylabel("retained fraction f50 = R50 / W")
+    figstyle.title(ax, "Q6: kick retained 50 tokens after the window", "role family 1×; R50 = mean Δ over t = 70–79; W = window Δ; 95% question-bootstrap CI")
     fig.tight_layout(); figstyle.save(fig, "q6_tau.png")
     # positive control
     fig, axs = plt.subplots(1, 2, figsize=(11, 3.6))
