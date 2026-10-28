@@ -1,0 +1,42 @@
+{
+ "sycophancy": {
+  "n": 40,
+  "target": 2,
+  "correct": 40,
+  "purity": 1.0,
+  "misclass": {}
+ },
+ "honesty": {
+  "n": 40,
+  "target": 4,
+  "correct": 39,
+  "purity": 0.975,
+  "misclass": {
+   "6": 1
+  }
+ },
+ "format": {
+  "n": 40,
+  "target": 5,
+  "correct": 40,
+  "purity": 1.0,
+  "misclass": {}
+ },
+ "self_description": {
+  "n": 20,
+  "target": 3,
+  "correct": 20,
+  "purity": 1.0,
+  "misclass": {}
+ },
+ "refusal": {
+  "n": 40,
+  "target": 1,
+  "correct": 38,
+  "purity": 0.95,
+  "misclass": {
+   "6": 2
+  }
+ },
+ "_pass_rule": "purity >= 0.90 per set"
+}
