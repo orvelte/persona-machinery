@@ -22,7 +22,7 @@ import torch
 from pm_common import D, N_LAYERS, load_hf, read_jsonl, tokenizer
 
 
-def main(short, gen_f, out_dir, batch=8, span="resp"):
+def main(short, gen_f, out_dir, batch=16, span="resp"):
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     rows = read_jsonl(gen_f)
     tok = tokenizer(short)
@@ -51,11 +51,15 @@ def main(short, gen_f, out_dir, batch=8, span="resp"):
             ids = keep[i][1]; inp[k, :len(ids)] = torch.tensor(ids); att[k, :len(ids)] = 1
         with torch.no_grad():
             o = model(input_ids=inp.cuda(), attention_mask=att.cuda(), use_cache=False, output_hidden_states=True)
-        hs = o.hidden_states  # tuple of 33: [0] embeddings, [L] after block L
+            hs = torch.stack(o.hidden_states[1:], 0)  # [32, B, T, D]: [L-1] = after block L
+            span = torch.zeros((len(idx), L), dtype=torch.float32, device="cuda")
+            for k, i in enumerate(idx):
+                span[k, keep[i][2]:keep[i][3]] = 1.0
+            means = torch.einsum("lbtd,bt->lbd", hs.float(), span) / span.sum(1)[None, :, None]   # [32, B, D]
+            means = means.permute(1, 0, 2).to(torch.float16).cpu().numpy()
         for k, i in enumerate(idx):
-            a, b = keep[i][2], keep[i][3]
-            for Lr in range(1, N_LAYERS + 1):
-                X[i, Lr - 1] = hs[Lr][k, a:b].float().mean(0).cpu().numpy()
+            X[i] = means[k]
+        del o, hs
         if (s // batch) % 25 == 0:
             print(f"{s + len(idx)}/{len(keep)} {(time.time() - t0) / 60:.1f} min", flush=True)
     np.savez(out / "acts.npz", X=X, layers=np.arange(1, N_LAYERS + 1))
@@ -68,4 +72,4 @@ def main(short, gen_f, out_dir, batch=8, span="resp"):
 if __name__ == "__main__":
     a = sys.argv[1:]
     opt = lambda k, d: type(d)(a[a.index(k) + 1]) if k in a else d  # noqa: E731
-    main(a[0], a[1], a[2], opt("--batch", 8), opt("--span", "resp"))
+    main(a[0], a[1], a[2], opt("--batch", 16), opt("--span", "resp"))
