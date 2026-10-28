@@ -70,15 +70,18 @@ def main():
     # figures: per-layer profiles
     import matplotlib.pyplot as plt
     fig, axes = plt.subplots(1, 3, figsize=(12, 3.4))
+    lst = json.loads((OUT / "lstar.json").read_text())
+    MODEL_C = {"qwen_it": 0, "qwen_base": 1, "olmo_base": 2, "olmo_sft": 3, "olmo_dpo": 4, "olmo_rl": 5}
     for i, p in enumerate(B):
-        s = B[p][1]; xs = range(1, L + 1); st = figstyle.LINESTYLES[i % 4]; c = figstyle.PALETTE[i % 7]
+        s = B[p][1]; xs = range(1, L + 1); mdl, fmt = p.rsplit("_", 1)
+        st = "-" if fmt == "chat" else "--"; c = figstyle.PALETTE[MODEL_C[mdl]]
         axes[0].plot(xs, [s["layers"][str(l)]["pc_share_top5"][0] for l in xs], st, color=c, label=p)
         axes[1].plot(xs, [s["layers"][str(l)]["split_half_cos"] for l in xs], st, color=c)
         axes[2].plot(xs, [s["layers"][str(l)]["dprime_heldout"] for l in xs], st, color=c)
-        axes[2].axvline(s["L_star"], color=c, lw=0.6, alpha=0.5)
-    figstyle.title(axes[0], "PC1 variance share", "99 role means per layer; colour/style = model × format"); axes[0].set_xlabel("layer"); axes[0].legend(fontsize=7)
+        axes[2].axvline(lst[p]["L_star"], color=c, lw=0.6, alpha=0.5)
+    figstyle.title(axes[0], "PC1 variance share", "99 role means; colour = model, solid = chat, dashed = narrative"); axes[0].set_xlabel("layer"); axes[0].legend(fontsize=7)
     figstyle.title(axes[1], "Split-half |cos(PC1_A, PC1_B)|", "question halves A/B (10 each); gate 0.9 at L*"); axes[1].axhline(0.9, color="k", lw=0.6, ls=":"); axes[1].set_xlabel("layer")
-    figstyle.title(axes[2], "Held-out role separation d′", "between/within variance of held-out projections; vertical line = L*"); axes[2].set_xlabel("layer")
+    figstyle.title(axes[2], "Held-out role separation d′", "held-out half; vertical lines = frozen L* (argmax over 1–24)"); axes[2].set_xlabel("layer")
     figstyle.save(fig, "m0_profiles.png")
     if summ["comparisons"]:
         fig, axes = plt.subplots(1, 2, figsize=(9, 3.4))

@@ -1,0 +1,80 @@
+{
+ "hallucination": {
+  "none": {
+   "trait": 26.42105263157895,
+   "n": 19
+  },
+  "hallucination_c1.0": {
+   "trait": 87.05,
+   "coherence": 2.3,
+   "n": 20,
+   "refusals": 0
+  },
+  "hallucination_c1.5": {
+   "trait": 46.23529411764706,
+   "coherence": 1.9473684210526316,
+   "n": 17,
+   "refusals": 0
+  },
+  "hallucination_c2.0": {
+   "trait": 72.4375,
+   "coherence": 2.176470588235294,
+   "n": 16,
+   "refusals": 0
+  },
+  "gate_pass": false,
+  "frozen_c": null
+ },
+ "impoliteness": {
+  "none": {
+   "trait": 1.45,
+   "n": 20
+  },
+  "impoliteness_c1.0": {
+   "trait": 96.0,
+   "coherence": 1.3,
+   "n": 20,
+   "refusals": 0
+  },
+  "impoliteness_c1.5": {
+   "trait": 94.05,
+   "coherence": 0.3,
+   "n": 20,
+   "refusals": 0
+  },
+  "impoliteness_c2.0": {
+   "trait": 94.1,
+   "coherence": 0.0,
+   "n": 20,
+   "refusals": 0
+  },
+  "gate_pass": false,
+  "frozen_c": null
+ },
+ "sycophancy": {
+  "none": {
+   "trait": 23.0,
+   "n": 20
+  },
+  "sycophancy_c1.0": {
+   "trait": 5.6,
+   "coherence": 1.4,
+   "n": 20,
+   "refusals": 0
+  },
+  "sycophancy_c1.5": {
+   "trait": 22.85,
+   "coherence": 1.6,
+   "n": 20,
+   "refusals": 0
+  },
+  "sycophancy_c2.0": {
+   "trait": 59.0,
+   "coherence": 1.4,
+   "n": 20,
+   "refusals": 0
+  },
+  "gate_pass": false,
+  "frozen_c": null
+ }
+}

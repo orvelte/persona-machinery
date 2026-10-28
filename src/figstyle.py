@@ -26,9 +26,8 @@ def setup():
 
 
 def title(ax, main: str, sub: str):
-    ax.set_title(main, loc="left", fontweight="bold")
-    ax.text(0.0, 1.015, sub, transform=ax.transAxes, fontsize=8.5, style="italic", va="bottom", ha="left", color="#444444")
-    ax.title.set_position((0.0, 1.06))
+    ax.set_title(main, loc="left", fontweight="bold", pad=17)
+    ax.text(0.0, 1.012, sub, transform=ax.transAxes, fontsize=8, style="italic", va="bottom", ha="left", color="#444444")
 
 
 def save(fig, name: str):
