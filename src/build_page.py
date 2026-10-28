@@ -62,7 +62,7 @@ MODULES = [
      "figures": ["q4b_armA.png", "q4b_armB.png"]},
     {"id": "Q4", "name": "Pretraining origin of the axis", "status": "done",
      "question": "Base vs instruct axis cosine and CKA; a 200-passage narrative battery in five classes; OLMo stage tracking; three convention-vs-persona tasks.",
-     "verdict": "The axis exists before post-training, but it reads expository register, not helpful characters in stories.",
+     "verdict": "The axis exists before post-training, but it reads expository register, not helpful characters in stories. A register-vs-character control (helper/villain × encyclopaedia entry/first-person manual) is being added.",
      "points": [
          "Qwen: the base model's narrative axis is the instruct axis (cos +0.81 with the instruct chat axis at L* 24; +0.88 in matched narrative format; split-half ceiling ≈ 0.93).",
          "OLMo: not the same axis by the 0.7 rule (+0.59 base narrative vs RL chat), mostly a format difference: base vs RL in matched narrative format is +0.91 (descriptive only).",
@@ -78,12 +78,12 @@ MODULES = [
     {"id": "Q3", "name": "Readers and dependent behaviours", "status": "running",
      "question": "Ablate or clamp the axis at L*..L*+8 on generated tokens; score refusal, sycophancy, self-description, style and honesty, with format-following as the control. Then find readers by axis-restricted path patching.",
      "verdict": "", "points": [], "figures": []},
-    {"id": "Q5", "name": "Persona vectors vs the axis", "status": "blocked",
+    {"id": "Q6", "name": "Does each stage deepen the Assistant basin?", "status": "running",
+     "question": "After a 5-token role perturbation, how fast does the axis projection return, and how much displacement remains? Compared across OLMo base → SFT → DPO → RLVR and Qwen3.5-9B base vs instruct. Tests the terraforming hypothesis and the thesis's 'deeper basin' clause.",
+     "verdict": "Approved by Olivia; queued after Q1/Q3.", "points": [], "figures": []},
+    {"id": "Q5", "name": "Persona vectors vs the axis", "status": "deferred",
      "question": "Does orthogonalising a trait vector to the axis remove its steering effect?",
-     "verdict": "Not run: no trait vector passed the M0 steering gate. One more grid (1 layer, c = 2–4) awaits Olivia's go-ahead.", "points": [], "figures": []},
-    {"id": "Q6", "name": "Attractor dynamics (stretch)", "status": "deferred",
-     "question": "After a 5-token role perturbation, how fast does the axis projection return, in base vs instruct and across OLMo stages?",
-     "verdict": "Pre-registration and code done; runs only if time remains after the priority modules.", "points": [], "figures": []},
+     "verdict": "On hold (Olivia): runs only if the pod is idle after Q6 and the register control. No trait vector passed the M0 steering gate; the next grid is 1 layer at c = 2–4.", "points": [], "figures": []},
 ]
 
 STATUS_LABEL = {"done": "Done", "running": "Running", "queued": "Queued", "blocked": "Blocked", "deferred": "Deferred"}
@@ -186,7 +186,7 @@ a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
   <section class="block">
     <h2>Status</h2>
     <div class="tablebox"><table><thead><tr><th>Module</th><th>Question</th><th>Status</th><th>Answer so far</th></tr></thead><tbody>{rows}</tbody></table></div>
-    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first, then Q1/Q3; Q5/Q6 dropped if time is short.</p>
+    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control; Q5 only if the pod is idle after those.</p>
   </section>
 
   <section class="block budget">
