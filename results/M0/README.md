@@ -1,5 +1,7 @@
 # M0 — Shared setup
 
+> **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** Layer-32 statistics use the hidden state after the final RMSNorm (HF `hidden_states[32]`), unlike layers 1–31, so the layer-32 values of d′ and of the basis are not comparable with the rest. Part of the rationale for DECISIONS #12 ("argmax fell on the final layer") rests on that layer. The frozen L\* values (22–24) are unaffected. The "covariance-matched" nulls have |cos| 0.45–0.88 with the AA itself, and the isotropic nulls capture about 0.1% of its role variance; neither is a variance-matched control (red-team #6).
+
 **Assistant Axis extracted for 8 model × format pairs; G-AA passes for 7 of them. G-trait fails for every trait, so Q5 does not run (DECISIONS #14–15).**
 
 ## Assistant Axis (PC1 of 99 role means, response tokens, default oriented positive)

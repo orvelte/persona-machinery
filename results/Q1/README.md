@@ -1,5 +1,7 @@
 # Q1: Who writes the Assistant-Axis coordinate? (`qwen_it` chat, L\* = 24)
 
+> **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** (1) The attribution and patching run on half-B questions, which are also AA fit questions (the AA was fitted on all 20); this is undisclosed in the original write-up and could inflate the gap. (2) The nulls are selected for near-zero AA writes, so "nulls close 0–2%" is partly by construction; a norm-matched null was not run. (3) The positive control's failure (+0.7 points) means the behavioural meaning of the writers is unknown; it does not show the AA is behaviourally inert (see Q3 correction). The "intermediate" rule outcome (top-10 share 43.5%) stands.
+
 **Answer: intermediate, leaning concentrated, and late. The top 10 of 697 components carry 43.5% of the default − role AA gap at L\*
 (95% CI 42.6–44.7%). That is inside the pre-registered *intermediate* band (30–50%).** 14 components reach 50% and 73 reach 80%.
 Blocks 19–24 write 77% of the gap. By component class, the 18 Gated-DeltaNet layers' value heads write the most (7.0 of 12.2), the MLPs

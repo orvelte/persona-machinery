@@ -1,5 +1,7 @@
 # Q4b: Narrative convention vs the Assistant's own judge distinction
 
+> **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** Decision-table row 4 should **not** fire. It rested on a percentile bootstrap over 4 stories; a t-interval gives [−0.011, +0.045] and an exact sign-flip test p = 0.25, and with 4 stories the minimum attainable p is 0.125, so protagonist-level rows are untestable at this n. Corrected outcome for qwen_base: **no row fires; Arm A shows no judge effect and Arm B is unmeasurable.**
+
 **Question.** Is "you don't cheat a human reviewer, but fitting an automated checker is fine" a convention already in pretraining
 text that the Assistant inherits, or does it belong to the post-trained Assistant?
 

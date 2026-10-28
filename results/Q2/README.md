@@ -1,5 +1,7 @@
 # Q2 — What triggers the AA coordinate: chat template vs content
 
+> **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** The size claim "every template knockout moves ≤ 0.15 role SDs" holds only on PC1. On OLMo's contrast axis the template knockout moves 0.34–0.35 role SDs and the system-message knockout 0.86 SD, about the size of a role system prompt. So for OLMo, the default system message (not the template delimiters) carries much of the default-Assistant signal on c. The pre-registered rule outcomes are unchanged.
+
 **The pre-registered prediction is not supported in the primary model (`olmo_rl`).** For the same response text, the raw-document (narrative) projection on OLMo's PC1 is the same as the chat projection (gap 0.03 [−0.03, 0.09]). The ratio Δ is therefore undefined, and Δ_template − Δ_user = +2.9 [−7.4, +13.6] includes 0. On OLMo's contrast axis c the result runs the other way: knocking out the template moves the coordinate *away* from the raw-document value, while knocking out OLMo's default system message moves it 3.8× past it.
 
 In the secondary model (`qwen_it`) the prediction holds on PC1, narrowly for attention knockout (+0.13 [+0.003, +0.28]) and robustly for token ablation (+0.42 [+0.24, +0.61]). The knockout result disappears when position 0, the attention sink, is spared. In Qwen most of the template effect comes from the closed think block that sits right before the response.

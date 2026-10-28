@@ -1,5 +1,7 @@
 # Q3: What reads the Assistant-Axis coordinate, and what depends on it? (`qwen_it` chat, L\* = 24)
 
+> **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** The reading "the AA coordinate is a readout, not a lever" is **withdrawn**. The response-only edit at layers 24–32 was never shown to move any behaviour: no efficacy positive control was run, and the same intervention family failed its positive controls in Q1 (clamp at L\*: +0.7 points) and Q4.4. Prompt-position states are untouched by design, so later layers can still read the persona from the prompt. Four of the five readouts sit at a floor or ceiling. The defensible statement is: *a response-only AA edit at L24–32 has no detectable behavioural effect; whether the AA is causal cannot be decided with this intervention.* The pre-registered label "narrow" is computed correctly. Also: the layer-32 step of the window used a direction fitted after the final norm but applied before it (red-team #3), so that one layer's edit is mis-specified.
+
 **Answer: narrow. Removing the AA coordinate at layers 24–32 on every generated token moves 1 of 5 behaviours (style), so the
 pre-registered rule gives *narrow* (≤ 1 mover).** Refusal, sycophancy, self-description and false-premise honesty are unchanged, and
 none of them moves beyond the random or covariance-matched nulls. The format-following control stays at 97% of baseline, so the ablation

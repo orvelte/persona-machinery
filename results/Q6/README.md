@@ -1,5 +1,7 @@
 # Q6 — Does each post-training stage deepen the Assistant basin?
 
+> **Post-review correction (2026-10-28, after the blind red-team review in `results/REDTEAM.md`).** The mechanism paragraph below is wrong. Because the readout is at L\* and the vector is added at L\*'s output, the cached keys and values of layers ≤ L\* are never perturbed. Carry-over can therefore arise **only through changed sampled tokens**, not through attention to perturbed cached states. The positive control (displacement during the window) is tautological for the same reason. Two further caveats: the role vectors and default mean include the evaluated default responses (fit-on-eval, undisclosed), and qwen_base's G-AA pass depends on the post-hoc L\* re-freeze (DECISIONS #12). The verdict "no detectable change at any stage" stands; the design still cannot resolve basin depth. A better design reads out at layers above L\* and uses nulls matched on the AA component.
+
 **No detectable deepening at any stage, but the design cannot resolve basin depth.** A role vector injected for 5 response tokens moves the Assistant-Axis coordinate strongly in every model, so the positive control passes. Within 10 tokens of the window ending, though, only 0–4% of that displacement remains. Nothing beyond the nulls remains 50 tokens later (f50 ≈ 0 everywhere).
 
 - **τ cannot be fitted.** The exponential fits sit at their bounds, with CIs spanning [0.5, 1000] tokens.
