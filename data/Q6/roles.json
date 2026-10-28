@@ -1,0 +1,634 @@
+{
+ "qwen_base_narrative": {
+  "L_star": 22,
+  "default_norm": 45.936100129806086,
+  "roles": [
+   {
+    "role": "infant",
+    "aa_z": -2.718237702405512,
+    "norm": 40.79072142244065,
+    "aa_comp": -28.178789774032996,
+    "cax_comp": -19.115923681280808,
+    "rand_aa_comp": 0.4968814312733144,
+    "cov_aa_comp": -16.155950217491817
+   },
+   {
+    "role": "eldritch",
+    "aa_z": -2.543351827085633,
+    "norm": 35.17171545593893,
+    "aa_comp": -26.85758687262485,
+    "cax_comp": -23.613633952629474,
+    "rand_aa_comp": -0.685322009080782,
+    "cov_aa_comp": -9.964996693402412
+   },
+   {
+    "role": "amnesiac",
+    "aa_z": -2.227701758418304,
+    "norm": 31.299209157999268,
+    "aa_comp": -24.472958692732323,
+    "cax_comp": -20.269600799887883,
+    "rand_aa_comp": 0.1372559711640032,
+    "cov_aa_comp": -9.4125136804449
+   },
+   {
+    "role": "fool",
+    "aa_z": -2.1087150187110977,
+    "norm": 31.817532651444328,
+    "aa_comp": -23.57405461918884,
+    "cax_comp": -16.43029283211562,
+    "rand_aa_comp": 0.2200029162186243,
+    "cov_aa_comp": 25.87272293539066
+   },
+   {
+    "role": "comedian",
+    "aa_z": -1.8083611075807065,
+    "norm": 29.328238135810484,
+    "aa_comp": -21.30498367158414,
+    "cax_comp": -19.321022901208135,
+    "rand_aa_comp": -0.18109562708468063,
+    "cov_aa_comp": 15.086561847085235
+   }
+  ],
+  "conds": [
+   "none",
+   "role_infant",
+   "rand_0",
+   "cov_0",
+   "role3_infant",
+   "rand3_0",
+   "role_eldritch",
+   "rand_1",
+   "cov_1",
+   "role3_eldritch",
+   "rand3_1",
+   "role_amnesiac",
+   "rand_2",
+   "cov_2",
+   "role3_amnesiac",
+   "rand3_2",
+   "role_fool",
+   "rand_3",
+   "cov_3",
+   "role3_fool",
+   "rand3_3",
+   "role_comedian",
+   "rand_4",
+   "cov_4",
+   "role3_comedian",
+   "rand3_4"
+  ]
+ },
+ "qwen_it_narrative": {
+  "L_star": 22,
+  "default_norm": 46.12759386887638,
+  "roles": [
+   {
+    "role": "void",
+    "aa_z": -2.4359517288256405,
+    "norm": 34.070594914990515,
+    "aa_comp": -30.359605173163438,
+    "cax_comp": -28.07859997496155,
+    "rand_aa_comp": 0.5271543443740065,
+    "cov_aa_comp": -18.392507544706348
+   },
+   {
+    "role": "eldritch",
+    "aa_z": -2.14461978790642,
+    "norm": 31.321452067777145,
+    "aa_comp": -27.947518620479627,
+    "cax_comp": -24.890545426079584,
+    "rand_aa_comp": -0.32256944606861226,
+    "cov_aa_comp": 2.4039006926420825
+   },
+   {
+    "role": "wraith",
+    "aa_z": -2.0499405546079545,
+    "norm": 29.85414927605687,
+    "aa_comp": -27.16362069038287,
+    "cax_comp": -25.752898267486778,
+    "rand_aa_comp": 0.3732231403423235,
+    "cov_aa_comp": -12.202882389234048
+   },
+   {
+    "role": "aberration",
+    "aa_z": -1.7545170907773548,
+    "norm": 28.91365357502409,
+    "aa_comp": -24.71765832111886,
+    "cax_comp": -23.166295534693038,
+    "rand_aa_comp": 0.1312187762223428,
+    "cov_aa_comp": 25.229105655920847
+   },
+   {
+    "role": "ancient",
+    "aa_z": -1.7413680003985543,
+    "norm": 28.012953564360824,
+    "aa_comp": -24.608790258170966,
+    "cax_comp": -23.289612771478836,
+    "rand_aa_comp": -0.22087189418296038,
+    "cov_aa_comp": 11.883500558032406
+   }
+  ],
+  "conds": [
+   "none",
+   "role_void",
+   "rand_0",
+   "cov_0",
+   "role3_void",
+   "rand3_0",
+   "role_eldritch",
+   "rand_1",
+   "cov_1",
+   "role3_eldritch",
+   "rand3_1",
+   "role_wraith",
+   "rand_2",
+   "cov_2",
+   "role3_wraith",
+   "rand3_2",
+   "role_aberration",
+   "rand_3",
+   "cov_3",
+   "role3_aberration",
+   "rand3_3",
+   "role_ancient",
+   "rand_4",
+   "cov_4",
+   "role3_ancient",
+   "rand3_4"
+  ]
+ },
+ "qwen_it_chat": {
+  "L_star": 24,
+  "default_norm": 46.56436724249348,
+  "roles": [
+   {
+    "role": "eldritch",
+    "aa_z": -2.0215362164723794,
+    "norm": 37.779967619761834,
+    "aa_comp": -31.84787929699834,
+    "cax_comp": -32.16901389806223,
+    "rand_aa_comp": 0.4086504940642286,
+    "cov_aa_comp": -16.939040005058857
+   },
+   {
+    "role": "fool",
+    "aa_z": -1.8865021419611956,
+    "norm": 42.38002975930403,
+    "aa_comp": -30.491070094328144,
+    "cax_comp": -23.368624796019034,
+    "rand_aa_comp": 0.11195341051548835,
+    "cov_aa_comp": -1.424580421854329
+   },
+   {
+    "role": "infant",
+    "aa_z": -1.879129268973149,
+    "norm": 44.677331029963824,
+    "aa_comp": -30.41698818606526,
+    "cax_comp": -24.25908634130176,
+    "rand_aa_comp": 0.17878143997660323,
+    "cov_aa_comp": 3.415692892227324
+   },
+   {
+    "role": "void",
+    "aa_z": -1.7645397347925513,
+    "norm": 36.05250135937116,
+    "aa_comp": -29.265603729447633,
+    "cax_comp": -30.591799226595974,
+    "rand_aa_comp": 0.13047748339836052,
+    "cov_aa_comp": 29.02127942092745
+   },
+   {
+    "role": "leviathan",
+    "aa_z": -1.7107978093920815,
+    "norm": 34.41438066072444,
+    "aa_comp": -28.72561010771528,
+    "cax_comp": -28.615003930935377,
+    "rand_aa_comp": -0.34596935646177235,
+    "cov_aa_comp": 21.446565620113706
+   }
+  ],
+  "conds": [
+   "none",
+   "role_eldritch",
+   "rand_0",
+   "cov_0",
+   "role3_eldritch",
+   "rand3_0",
+   "role_fool",
+   "rand_1",
+   "cov_1",
+   "role3_fool",
+   "rand3_1",
+   "role_infant",
+   "rand_2",
+   "cov_2",
+   "role3_infant",
+   "rand3_2",
+   "role_void",
+   "rand_3",
+   "cov_3",
+   "role3_void",
+   "rand3_3",
+   "role_leviathan",
+   "rand_4",
+   "cov_4",
+   "role3_leviathan",
+   "rand3_4"
+  ]
+ },
+ "olmo_base_narrative": {
+  "L_star": 22,
+  "default_norm": 16.510278336916986,
+  "roles": [
+   {
+    "role": "infant",
+    "aa_z": -3.812055861859795,
+    "norm": 16.796812529119784,
+    "aa_comp": -11.543218826733654,
+    "cax_comp": -6.49924170839909,
+    "rand_aa_comp": 0.08501572919776751,
+    "cov_aa_comp": 0.8590332461552941
+   },
+   {
+    "role": "comedian",
+    "aa_z": -2.8523723396049565,
+    "norm": 11.56924571934653,
+    "aa_comp": -9.14418163507157,
+    "cax_comp": -6.851877211457955,
+    "rand_aa_comp": -0.1319194771803833,
+    "cov_aa_comp": -0.4931848539515009
+   },
+   {
+    "role": "fool",
+    "aa_z": -2.5036058718484946,
+    "norm": 10.37054528172771,
+    "aa_comp": -8.272327833324022,
+    "cax_comp": -5.899102577756235,
+    "rand_aa_comp": 0.11182805799518702,
+    "cov_aa_comp": 1.0453658509261623
+   },
+   {
+    "role": "procrastinator",
+    "aa_z": -2.335610674684584,
+    "norm": 10.94690389431575,
+    "aa_comp": -7.852369881904895,
+    "cax_comp": -5.863560868012486,
+    "rand_aa_comp": 0.08213866680410503,
+    "cov_aa_comp": 7.904353325575379
+   },
+   {
+    "role": "eldritch",
+    "aa_z": -2.2706878190716555,
+    "norm": 13.161229081157545,
+    "aa_comp": -7.690074352605432,
+    "cax_comp": -8.612620323260103,
+    "rand_aa_comp": -0.07347791886308852,
+    "cov_aa_comp": 4.198880454162098
+   }
+  ],
+  "conds": [
+   "none",
+   "role_infant",
+   "rand_0",
+   "cov_0",
+   "role3_infant",
+   "rand3_0",
+   "role_comedian",
+   "rand_1",
+   "cov_1",
+   "role3_comedian",
+   "rand3_1",
+   "role_fool",
+   "rand_2",
+   "cov_2",
+   "role3_fool",
+   "rand3_2",
+   "role_procrastinator",
+   "rand_3",
+   "cov_3",
+   "role3_procrastinator",
+   "rand3_3",
+   "role_eldritch",
+   "rand_4",
+   "cov_4",
+   "role3_eldritch",
+   "rand3_4"
+  ]
+ },
+ "olmo_sft_chat": {
+  "L_star": 23,
+  "default_norm": 14.372240385583096,
+  "roles": [
+   {
+    "role": "eldritch",
+    "aa_z": -4.916254796255742,
+    "norm": 11.389331656402195,
+    "aa_comp": -9.864339091205142,
+    "cax_comp": -7.42905713643316,
+    "rand_aa_comp": -0.030501130473369747,
+    "cov_aa_comp": -2.671827871892349
+   },
+   {
+    "role": "witch",
+    "aa_z": -2.890292852035282,
+    "norm": 7.379433027072875,
+    "aa_comp": -6.2441064922603555,
+    "cax_comp": -4.59582977369971,
+    "rand_aa_comp": -0.09615707561713868,
+    "cov_aa_comp": 0.40665366684952026
+   },
+   {
+    "role": "ghost",
+    "aa_z": -2.5857111576143774,
+    "norm": 6.446286858558917,
+    "aa_comp": -5.699843268397735,
+    "cax_comp": -4.4488388018374865,
+    "rand_aa_comp": 0.00975378139822913,
+    "cov_aa_comp": 2.6566039334146128
+   },
+   {
+    "role": "bard",
+    "aa_z": -2.5333756269708454,
+    "norm": 6.6560346648520285,
+    "aa_comp": -5.606323844373366,
+    "cax_comp": -3.4291190373452283,
+    "rand_aa_comp": 0.05754384662664895,
+    "cov_aa_comp": 3.7510239164018877
+   },
+   {
+    "role": "bohemian",
+    "aa_z": -2.2947420924809845,
+    "norm": 6.934658822111378,
+    "aa_comp": -5.179904728641153,
+    "cax_comp": -3.8836473024891136,
+    "rand_aa_comp": 0.023832532524898253,
+    "cov_aa_comp": 3.215199902234135
+   }
+  ],
+  "conds": [
+   "none",
+   "role_eldritch",
+   "rand_0",
+   "cov_0",
+   "role3_eldritch",
+   "rand3_0",
+   "role_witch",
+   "rand_1",
+   "cov_1",
+   "role3_witch",
+   "rand3_1",
+   "role_ghost",
+   "rand_2",
+   "cov_2",
+   "role3_ghost",
+   "rand3_2",
+   "role_bard",
+   "rand_3",
+   "cov_3",
+   "role3_bard",
+   "rand3_3",
+   "role_bohemian",
+   "rand_4",
+   "cov_4",
+   "role3_bohemian",
+   "rand3_4"
+  ]
+ },
+ "olmo_dpo_chat": {
+  "L_star": 23,
+  "default_norm": 12.236472876139011,
+  "roles": [
+   {
+    "role": "eldritch",
+    "aa_z": -4.006542908048928,
+    "norm": 11.921283310240499,
+    "aa_comp": -9.49170778758543,
+    "cax_comp": -6.170789089122412,
+    "rand_aa_comp": -0.10269266431362813,
+    "cov_aa_comp": -2.020668709460753
+   },
+   {
+    "role": "witch",
+    "aa_z": -3.151974147096525,
+    "norm": 10.005556353049574,
+    "aa_comp": -7.636965846187778,
+    "cax_comp": -6.158559798189661,
+    "rand_aa_comp": -0.15355953699384894,
+    "cov_aa_comp": 0.157147181157978
+   },
+   {
+    "role": "ghost",
+    "aa_z": -2.7137821499341426,
+    "norm": 8.898820396332656,
+    "aa_comp": -6.685921164170503,
+    "cax_comp": -6.164322028468407,
+    "rand_aa_comp": -0.00026628224935702077,
+    "cov_aa_comp": 3.5293990109212303
+   },
+   {
+    "role": "leviathan",
+    "aa_z": -2.6110828084592943,
+    "norm": 9.080411209008453,
+    "aa_comp": -6.463024207610762,
+    "cax_comp": -6.1949646629523745,
+    "rand_aa_comp": 0.06932687766930934,
+    "cov_aa_comp": 6.237094645158532
+   },
+   {
+    "role": "bohemian",
+    "aa_z": -2.5270013554937445,
+    "norm": 9.280294464741706,
+    "aa_comp": -6.2805352091420446,
+    "cax_comp": -5.6733899845733635,
+    "rand_aa_comp": 0.03719019421366719,
+    "cov_aa_comp": 5.7946512434397075
+   }
+  ],
+  "conds": [
+   "none",
+   "role_eldritch",
+   "rand_0",
+   "cov_0",
+   "role3_eldritch",
+   "rand3_0",
+   "role_witch",
+   "rand_1",
+   "cov_1",
+   "role3_witch",
+   "rand3_1",
+   "role_ghost",
+   "rand_2",
+   "cov_2",
+   "role3_ghost",
+   "rand3_2",
+   "role_leviathan",
+   "rand_3",
+   "cov_3",
+   "role3_leviathan",
+   "rand3_3",
+   "role_bohemian",
+   "rand_4",
+   "cov_4",
+   "role3_bohemian",
+   "rand3_4"
+  ]
+ },
+ "olmo_rl_chat": {
+  "L_star": 23,
+  "default_norm": 14.123878989027535,
+  "roles": [
+   {
+    "role": "eldritch",
+    "aa_z": -4.149412482391126,
+    "norm": 11.458399319732239,
+    "aa_comp": -9.744760452545302,
+    "cax_comp": -6.87169117883443,
+    "rand_aa_comp": -0.07586943059819803,
+    "cov_aa_comp": -3.358478661627429
+   },
+   {
+    "role": "witch",
+    "aa_z": -3.2084694692007503,
+    "norm": 9.190644661749303,
+    "aa_comp": -7.807208648424593,
+    "cax_comp": -6.155639730425723,
+    "rand_aa_comp": -0.12828026779412025,
+    "cov_aa_comp": -0.24835021175572286
+   },
+   {
+    "role": "leviathan",
+    "aa_z": -2.5003753226829826,
+    "norm": 7.839437387279277,
+    "aa_comp": -6.349129814913738,
+    "cax_comp": -5.4090412926217795,
+    "rand_aa_comp": 0.007234821605248229,
+    "cov_aa_comp": 2.0717957398391045
+   },
+   {
+    "role": "bohemian",
+    "aa_z": -2.4804946937329815,
+    "norm": 8.0963875566498,
+    "aa_comp": -6.3081924276871515,
+    "cax_comp": -4.837616688560262,
+    "rand_aa_comp": 0.07156403584301384,
+    "cov_aa_comp": 5.090669371912553
+   },
+   {
+    "role": "bard",
+    "aa_z": -2.472801212275603,
+    "norm": 7.6174138127359825,
+    "aa_comp": -6.292350321769202,
+    "cax_comp": -4.450371654883872,
+    "rand_aa_comp": 0.03317283696093295,
+    "cov_aa_comp": 3.8457813135937564
+   }
+  ],
+  "conds": [
+   "none",
+   "role_eldritch",
+   "rand_0",
+   "cov_0",
+   "role3_eldritch",
+   "rand3_0",
+   "role_witch",
+   "rand_1",
+   "cov_1",
+   "role3_witch",
+   "rand3_1",
+   "role_leviathan",
+   "rand_2",
+   "cov_2",
+   "role3_leviathan",
+   "rand3_2",
+   "role_bohemian",
+   "rand_3",
+   "cov_3",
+   "role3_bohemian",
+   "rand3_3",
+   "role_bard",
+   "rand_4",
+   "cov_4",
+   "role3_bard",
+   "rand3_4"
+  ]
+ },
+ "olmo_rl_narrative": {
+  "L_star": 23,
+  "default_norm": 15.156212549942834,
+  "roles": [
+   {
+    "role": "fool",
+    "aa_z": -2.246902253554473,
+    "norm": 14.201650785749333,
+    "aa_comp": -11.441101408715808,
+    "cax_comp": -8.753968568133693,
+    "rand_aa_comp": 0.07779824028677908,
+    "cov_aa_comp": -2.2954352835041085
+   },
+   {
+    "role": "infant",
+    "aa_z": -1.9775870698712619,
+    "norm": 19.465409272552183,
+    "aa_comp": -10.524084167931615,
+    "cax_comp": -7.878881731361615,
+    "rand_aa_comp": -0.08247111089797135,
+    "cov_aa_comp": -7.22512835546281
+   },
+   {
+    "role": "void",
+    "aa_z": -1.7975896448123503,
+    "norm": 14.973217558828583,
+    "aa_comp": -9.911193576995096,
+    "cax_comp": -10.928373738701302,
+    "rand_aa_comp": 0.17315215479469434,
+    "cov_aa_comp": 0.07189534587825391
+   },
+   {
+    "role": "eldritch",
+    "aa_z": -1.790925852397703,
+    "norm": 15.668233897893623,
+    "aa_comp": -9.88850338756847,
+    "cax_comp": -10.741015573032712,
+    "rand_aa_comp": 0.04439703935033091,
+    "cov_aa_comp": 13.120129486302668
+   },
+   {
+    "role": "hoarder",
+    "aa_z": -1.6755905311580663,
+    "norm": 13.341595806919166,
+    "aa_comp": -9.495787029724573,
+    "cax_comp": -7.737201418891952,
+    "rand_aa_comp": -0.11194006176229684,
+    "cov_aa_comp": 4.272567050176055
+   }
+  ],
+  "conds": [
+   "none",
+   "role_fool",
+   "rand_0",
+   "cov_0",
+   "role3_fool",
+   "rand3_0",
+   "role_infant",
+   "rand_1",
+   "cov_1",
+   "role3_infant",
+   "rand3_1",
+   "role_void",
+   "rand_2",
+   "cov_2",
+   "role3_void",
+   "rand3_2",
+   "role_eldritch",
+   "rand_3",
+   "cov_3",
+   "role3_eldritch",
+   "rand3_3",
+   "role_hoarder",
+   "rand_4",
+   "cov_4",
+   "role3_hoarder",
+   "rand3_4"
+  ]
+ }
+}

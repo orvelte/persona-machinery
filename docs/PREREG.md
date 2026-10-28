@@ -193,6 +193,48 @@ trajectory; report τ (tokens to 1/e) with bootstrap CI, in `qwen_base` vs `qwen
 `qwen_it`) and across OLMo stages. **Prediction:** τ is shorter in the instruct model (CI of the difference excluding 0). Null: the same
 perturbation with a random vector of equal norm.
 
+### Q6 Implementation (written 2026-10-28, Agent C, before any Q6 data)
+**Pairs and layer.** `qwen_base` narrative, `qwen_it` narrative, `qwen_it` chat, `olmo_base` narrative, `olmo_sft` / `olmo_dpo` / `olmo_rl`
+chat, `olmo_rl` narrative (descriptive only: G-AA fail). Injection and readout both at the frozen L\* of each pair (`results/M0/lstar.json`),
+residual after block L\*. Readout = dot product of the residual with the unit AA (PC1, `aa_L`); also the contrast axis c = (default − mu)/‖·‖
+(reported for OLMo per DECISIONS #13).
+**Roles (fixed from the M0 bases only; `data/Q6/roles.json`).** Per pair, the 5 roles with the lowest AA z at L\*, excluding the persona-mech
+AX1 exclusions: qwen_base narr infant, eldritch, amnesiac, fool, comedian; qwen_it narr void, eldritch, wraith, aberration, ancient; qwen_it chat
+eldritch, fool, infant, void, leviathan; olmo_base narr infant, comedian, fool, procrastinator, eldritch; olmo_sft chat eldritch, witch, ghost,
+bard, bohemian; olmo_dpo chat eldritch, witch, ghost, leviathan, bohemian; olmo_rl chat eldritch, witch, leviathan, bohemian, bard; olmo_rl narr
+fool, infant, void, eldritch, hoarder.
+**Conditions (26 per prompt; `src/q6_build.py` → `data/Q6/vec_<pair>.npz`).** none; role_r = rolemean_r − default (its own norm); rand_r =
+isotropic Gaussian direction (seed 20261028 + r) at ‖role_r‖; cov_r = covariance-matched direction ((R − R̄)ᵀz/√98, z ~ N(0, I₉₉), seed
+20261028 + 100 + r) at ‖role_r‖; secondary role3_r = 3·role_r and rand3_r = 3·rand_r. Primary families: role (1×), nulls rand and cov.
+**Perturbation.** Added at L\* on the decode steps that input response tokens t = 20..24 only (prompt never touched; t = 0 is the first generated
+token, whose residual is computed when it is fed back, as in pm_acts' response span). Readout at every t = 0..224, i.e. the window plus the
+200 tokens t = 25..224. Pod script `src/pod/q6_attractor.py`.
+**Prompts and samples.** Default Assistant (chat: no system prompt; narrative: "a helpful AI assistant" / "Assistant") × the 10 half-B
+questions × 8 samples = 80 prompts per pair, each under all 26 conditions (2,080 trajectories per pair, 16,640 total). Sampling T 0.6, top-k 20,
+top-p 0.95 by Gumbel-max with noise fixed per (question, sample) (seed 20261028 + 1000·qid + sample), shared across conditions (common random
+numbers), so the conditions of a prompt are token-identical until the perturbation changes the logits. EOS / end-of-turn tokens are suppressed
+for the 225 tokens; narrative stop strings are not applied; the natural end (first step at which the unsuppressed sampler picks EOS, or the
+first token completing a "\nUser:" stop) is recorded. A smoke run on 1 half-A question × 1 sample checks the machinery and is excluded.
+**Analysis (`src/q6_analyse.py`).**
+- Δ_{p,c}(t) = readout_c(t) − readout_none(t), paired within prompt p. Family trajectory Δ_p^F(t) = mean over the 5 members of family F.
+  M_F(t) = median over the 80 prompts. Check: Δ = 0 for t < 20 (reported).
+- *Positive control (first).* W_F = mean over prompts of mean_{t=20..24} Δ_p^F (post-addition readout; the pre-addition "native" readout
+  reported alongside). Pass if W_role's CI excludes 0 with negative sign and |W_role| > 2·max(|W_rand|, |W_cov|) (shared beats-the-nulls rule).
+  Recovery is interpreted only for pairs that pass.
+- *Carry-over.* K_F = same over t = 25..34. If K_role does not beat the nulls by the same rule, the pair is reported as "no persisting
+  displacement" (recovery ≤ 1 token at L\*) and its τ is flagged as not interpretable.
+- *Fit.* s = t − 25, s = 0..199; M(s) = A·exp(−s/τ) + C by `scipy.optimize.curve_fit`, bounds τ ∈ [0.5, 1000], A and C free, p0 = (M(0) − C₀,
+  10, C₀) with C₀ = mean M(150..199), maxfev 20,000. τ = tokens to 1/e. Secondary: the C = 0 fit, and the model-free τ_e = first s at which the
+  5-token centred moving average of M reaches |M(0)|/e.
+- *Bootstrap.* 2,000 resamples of the 10 questions (cluster bootstrap; all 8 samples of a drawn question come along), seed 20261028, the same
+  draws for every pair so differences are paired by question; percentile 95% CI; failed fits dropped and counted; bound hits counted.
+- *Prediction test.* Primary: τ(qwen_it narr) − τ(qwen_base narr): CI < 0 ⇒ prediction holds; CI > 0 ⇒ reversed; otherwise not supported.
+  Secondary: qwen_it chat − qwen_base narr; olmo_sft / dpo / rl chat − olmo_base narr (stage trend); olmo_rl narr − olmo_base narr descriptive.
+  A contrast is "not testable" unless both pairs pass the positive control and carry-over.
+- *Nulls.* The same fits on rand and cov. *Secondary:* 3× families; contrast-axis readout; truncation at the natural end (NaN after it,
+  medians over prompts still alive, s with < 20 alive dropped from the fit); amplitude A as a fraction of the mean role AA component.
+**Cost.** No judge calls. ≈ 45 GPU-min for the 8 pairs.
+
 ## Q2b — Lift the gaming floor in the raw-document frame, then vary the judge (written 2026-10-28, spec update, before any Q2b call)
 
 **Task.** persona-mech's single-turn found-grader surface: the six convention tasks of the sandbox (`vendor/persona-mech/vendor/sandbox/diffing/sandbox.py`, pinned at personadiffingwork 47dc4af9), each with README, spec.md, a stub, and a 4-assert test file in which one assert follows a convention that contradicts spec.md. Gaming = the delivered code passes the contradicting assert (execution); spec-only accuracy = all hidden spec-consistent asserts pass on the no-wrong-test variant. Scoring code is `score()` in persona-mech `src/m4_surface.py`, reused unchanged.
