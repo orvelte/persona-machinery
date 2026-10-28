@@ -461,3 +461,34 @@ re-scores all Q1 self-description items.
 **OLMo (`olmo_rl` chat, L\* = 23), secondary, only if budget allows:** the same attribution with the post-attention / post-feedforward
 RMSNorm linearised by the per-token scale of the block's actual pre-norm output, for both PC1 (`aa_23`) and the contrast axis
 c = (default_23 − mu_23)/‖·‖ (DECISIONS #13); no patching unless time remains.
+
+### Q3 Implementation (written 2026-10-28 ~18:50Z, Agent A, before any Q3 data)
+**Panel (`data/Q3/`).** refusal: 40 items drawn from JailbreakBench JBB-Behaviors (harmful split), 4 per category × 10, numpy seed
+20261028 (`src/pod/q3_refusal_set.py`; deviation, DECISIONS: not Agent-A-written); sycophancy: 40 (user states a common misconception
+and asks for agreement); self-description: 20 prompts × 2 samples; honesty: 40 false-premise questions; format: 40 (bullets / numbered /
+all-caps / single word / JSON keys / exact word count / max words; checker `check_format` in `src/q3_score.py`); style: the 10 half-B
+role-library questions, default Assistant, 1 sample (as pre-registered; these are AA fit questions, flagged in DECISIONS).
+Blind purity (Haiku, 6-way, labels not shown; `results/Q3/purity.json`, done before any generation): refusal 0.95, sycophancy 1.00,
+self-description 1.00, honesty 0.97, format 1.00, so every set passes ≥ 0.90.
+**Generation.** `pm_gen_hf.py`, `qwen_it` chat, no system prompt, thinking off, temperature 0.6 / top-p 0.95 / top-k 20, max 384 new
+tokens (format 160), 1,890 generations = 210 per condition × 9 conditions (`data/Q3/conditions.json`, compact basis
+`data/Q3/q3_basis_qwen_it.npz` = M0 keys for layers 24–32 plus clamp targets): `none`; `projout` (AA coordinate set to `mu_L`'s, layers
+24..32); `clampmed` (AA coordinate set to that of the median role at L\* = 24, *bartender*, using its own coordinate at each layer
+24..32); `rand_0..2` / `cov_0..2` (`rand1_{L}_{d}` / `cov1_{L}_{d}` projection-out about `mu_L`, layers 24..32). Generated tokens only.
+**Readouts (Haiku 5.5; judge sees request + reply only).** refusal YES/NO; sycophancy agree 0–100; honesty corrects-premise YES/NO;
+self-description `ASSISTANT_LIKENESS` 0–100; format deterministic; style index as in the Q1 Implementation (z-scaling and direction from
+M0 half-B, `data/Q3/style_ref.json`; 0 = default, 1 = role average). Effect = condition − none, **paired** bootstrap over prompts
+(2,000). Null size = mean |Δ| over the 3 draws of each family; "moves" = CI excludes 0 and |Δ| > 2 × the larger family's null. Rule over
+the 5 non-control behaviours (refusal, sycophancy, self-description, honesty, style) as pre-registered; format control ratio =
+projout / none ≥ 0.90, else re-run at 24..28. Judge agreement: 60 items per judged set re-scored by Sonnet 5.5 (seeded draw across
+conditions); Spearman ≥ 0.8 (binary sets: Cohen's κ ≥ 0.7 used instead, since Spearman on binary labels is not meaningful).
+**Readers (only for behaviours that move).** First-token metrics are impossible under a generated-tokens-only intervention (the first
+answer token is computed from prompt positions, which are never touched). Replacement metric (deviation, DECISIONS): for each item,
+take the `none` reply R0 and the `projout` reply R1 and teacher-force both prompt + R[:24]; m = mean log P(R1 tokens 2..24) − mean log P(R0
+tokens 2..24), with interventions applied only at completion-token positions. Full effect Δm = m(projout) − m(none). Validation: the
+Spearman between per-item Δm and the per-item judge change (projout − none) must be ≥ 0.6, else readers are not run for that behaviour.
+Units (17): the token mixer (attention or DeltaNet) of blocks 25..32, the MLP of blocks 25..32, and the final norm + unembedding. Path patch
+for a unit = that unit's input alone has its AA coordinate (aa of the preceding layer output) set to `mu`'s, with the residual stream
+untouched. Reader = a unit whose patch reproduces ≥ 20% of Δm (paired bootstrap CI excluding 0). Positive control: patching all 17 units'
+inputs together reproduces ≥ 80% of Δm. Head-level resolution is not attempted (heads share an input, so input path patching cannot
+separate them).

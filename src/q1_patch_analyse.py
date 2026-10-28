@@ -37,14 +37,11 @@ async def judge_self(rows, cap):
 
 
 def boot(cond_vals, none_vals, denom=None, n=2000, seed=SEED):
+    """(none - cond) [/ denom], paired bootstrap over prompts; inputs are dicts {(id, sample): value}."""
     rng = np.random.default_rng(seed)
-    cv = np.asarray(cond_vals, float); nv = np.asarray(none_vals, float)
-    out = []
-    for _ in range(n):
-        c = cv[rng.integers(0, len(cv), len(cv))].mean(); b = nv[rng.integers(0, len(nv), len(nv))].mean()
-        out.append((b - c) / denom if denom else (b - c))
-    pt = (nv.mean() - cv.mean()) / denom if denom else (nv.mean() - cv.mean())
-    return float(pt), [float(np.percentile(out, 2.5)), float(np.percentile(out, 97.5))]
+    ks = sorted(set(cond_vals) & set(none_vals)); x = np.array([none_vals[k] - cond_vals[k] for k in ks], float) / (denom or 1.0)
+    d = x[rng.integers(0, len(x), (n, len(x)))].mean(1)
+    return float(x.mean()), [float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5))]
 
 
 def main(cap=0.8):
@@ -63,12 +60,14 @@ def main(cap=0.8):
     conds = sorted({r["condition"] for r in rows})
 
     def key(cond, k):
-        return [r[k] for r in rows if r["condition"] == cond and r.get(k) is not None]
+        return {(r["id"], r["sample"]): r[k] for r in rows if r["condition"] == cond and r.get(k) is not None}
     none_aa = key("none", "aa"); none_like = key("none", "likeness")
     # style baseline
-    srows = {c: [r["style"] for r in rows if r["condition"] == c] for c in conds}
-    feats = list(srows["none"][0].keys())
-    none_mat = np.array([[d[f] for f in feats] for d in srows["none"]]); sd = none_mat.std(0, ddof=1) + 1e-9; mu0 = none_mat.mean(0)
+    ref = json.loads((REPO / "data/Q3/style_ref.json").read_text())
+    feats = ref["feats"]; sd = np.array(ref["role_sd"]); u = np.array(ref["unit_dir_z"]); dist = ref["dist_z"]
+    mu0 = np.mean([[r["style"][f] for f in feats] for r in rows if r["condition"] == "none"], 0)
+    for r in rows:
+        r["style_idx"] = float(((np.array([r["style"][f] for f in feats]) - mu0) / sd) @ u / dist)
     out = {"denom_gap": denom, "aa_frac_closed": {}, "selfdesc_drop": {}, "style_drift": {}}
     for c in conds:
         if c == "none":
@@ -77,15 +76,15 @@ def main(cap=0.8):
         out["aa_frac_closed"][c] = {"mean": pt, "ci": ci}
         pt2, ci2 = boot(key(c, "likeness"), none_like)
         out["selfdesc_drop"][c] = {"mean": pt2, "ci": ci2}
-        mat = np.array([[d[f] for f in feats] for d in srows[c]])
-        out["style_drift"][c] = {"mean": float(np.linalg.norm((mat - mu0) / sd, axis=1).mean())}
+        pt3, ci3 = boot(key("none", "style_idx"), key(c, "style_idx"))   # cond - none (role-ward = positive)
+        out["style_drift"][c] = {"mean": pt3, "ci": ci3}
     # average the 3 random draws into one 'rand10'
     for metric in ("aa_frac_closed", "selfdesc_drop", "style_drift"):
         rr = [out[metric][f"rand10_{d}"] for d in range(3) if f"rand10_{d}" in out[metric]]
         if rr:
             out[metric]["rand10"] = {"mean": float(np.mean([x["mean"] for x in rr])),
                                      "ci": [float(np.mean([x["ci"][0] for x in rr])), float(np.mean([x["ci"][1] for x in rr]))] if "ci" in rr[0] else None}
-    out["none_selfdesc"] = float(np.mean(none_like)); out["none_aa"] = float(np.mean(none_aa))
+    out["none_selfdesc"] = float(np.mean(list(none_like.values()))); out["none_aa"] = float(np.mean(list(none_aa.values())))
     out["positive_control_pass"] = bool(out["selfdesc_drop"]["clampLstar"]["mean"] >= 20)
     # beats-nulls for top10 on AA and self-description
     def beats(metric, cond):
