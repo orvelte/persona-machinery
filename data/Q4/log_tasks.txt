@@ -1,0 +1,4 @@
+kind_lie 19
+genie 0
+ai_denial 20
+39 items $0.090

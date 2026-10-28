@@ -24,3 +24,17 @@
 {"ts": "2026-10-28T13:04:30", "module": "Q4-check", "usd": 0.0011, "calls": 15, "cached": 15, "note": "Q4 task check: answer-line retry"}
 {"ts": "2026-10-28T13:34:12", "module": "pod", "usd": 0.2, "note": "stuck pod i5yetd4r2m0nlm on NVIDIA H100 80GB HBM3 deleted after 3 min"}
 {"ts": "2026-10-28T14:28:25", "module": "Q4-judge", "usd": 0.0751, "calls": 1457, "cached": 39, "note": "Q4.4 labels (1496)"}
+{"ts": "2026-10-28T14:29:15", "module": "Q2", "usd": 0.0117, "calls": 174, "cached": 6, "note": "Q2 assistant-likeness olmo_rl"}
+{"ts": "2026-10-28T14:29:24", "module": "Q2", "usd": 0.0155, "calls": 174, "cached": 6, "note": "Q2 coherence olmo_rl"}
+{"ts": "2026-10-28T14:29:32", "module": "Q2", "usd": 0.0088, "calls": 150, "cached": 0, "note": "Q2 assistant-likeness qwen_it"}
+{"ts": "2026-10-28T14:29:40", "module": "Q2", "usd": 0.0121, "calls": 150, "cached": 0, "note": "Q2 coherence qwen_it"}
+{"ts": "2026-10-28T14:36:21", "module": "Q1-patch", "usd": 0.0398, "calls": 540, "cached": 0, "note": "Q1 patch self-description"}
+{"ts": "2026-10-28T14:40:29", "module": "Q1-agree", "usd": 0.0914, "calls": 60, "cached": 0, "note": "q1 judge agreement (Sonnet)"}
+{"ts": "2026-10-28T14:41:20", "module": "Q1-patch-sonnet", "usd": 0.7426, "calls": 480, "cached": 60, "note": "Q1 self-description Sonnet rescore (agreement failed)"}
+{"ts": "2026-10-28T14:42:58", "module": "Q4.2b-write", "usd": 0.2872, "calls": 16, "cached": 0, "note": "Q4.2b register writing (Sonnet)"}
+{"ts": "2026-10-28T14:43:18", "module": "Q4.2b-check", "usd": 0.014, "calls": 323, "cached": 0, "note": "Q4.2b blind check + one rewrite"}
+{"ts": "2026-10-28T14:49:30", "module": "Q3-score", "usd": 0.0975, "calls": 1440, "cached": 0, "note": "Q3 judges qwen_it"}
+{"ts": "2026-10-28T14:50:20", "module": "Q3-agree", "usd": 0.347, "calls": 240, "cached": 0, "note": "q3 judge agreement (Sonnet)"}
+{"ts": "2026-10-28T14:51:13", "module": "Q3-sonnet", "usd": 0.7908, "calls": 599, "cached": 121, "note": "Q3 Sonnet rescore ['sycophancy', 'self_description']"}
+{"ts": "2026-10-28T15:15:33", "module": "Q5", "usd": 0.0136, "calls": 180, "cached": 60, "note": "gate3 trait qwen_it"}
+{"ts": "2026-10-28T15:15:45", "module": "Q5", "usd": 0.0148, "calls": 180, "cached": 60, "note": "gate3 coherence qwen_it"}
