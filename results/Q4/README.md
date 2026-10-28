@@ -19,8 +19,17 @@
   narrative format (pooled Δ Qwen +0.05 [−0.06, +0.15], OLMo −0.07 [−0.18, +0.04]). The frame matters more than training:
   qwen_it narrative vs chat is −0.15 [−0.25, −0.05]. The AA-ablation arm is uninterpretable because its positive control failed.
 
-On raw passages, the axis reads expository, informational register (what Assistants write) far more than helpful
-characters in stories.
+- **Register control (Q4.2b, added on Olivia's request)**: the pre-registered rule gives **both** (register and character) in every
+  model. Expository − story R = +1.92 [+1.67, +2.27] SD and helper − villain C = +1.20 [+0.92, +1.51] SD in qwen_base (qwen_it
+  +1.99 / +1.14; OLMo stages ≈ +1.25 / +1.30). There is no interaction.
+- **What "register" means here.** Third-person reference entries sit near encyclopaedia text (helper entry +3.0, villain entry +2.1;
+  non-narrative +3.6). First-person manuals fall to the level of stories (helper manual −0.5, villain manual −2.0). Olivia's key
+  contrast, villain *entry* − helper *manual*, is +2.66 [+2.28, +3.18] SD in qwen_base and +1.6 to +2.6 in every model. Her
+  literal 2 × 2 (entry vs manual) fires "register".
+
+**Revised reading.** On raw passages the axis is first a third-person, impersonal reference register: an encyclopaedia entry about
+a villain is more Assistant-like than a butler explaining his craft. Character is a second, additive dimension of about 1.2 SD:
+helpers sit above villains within every register. Both are present at full size in the base models; post-training changes neither.
 
 ## Q4.1 Base-model AA vs instruct AA (M0 bases; `q41.json`, `q41_rows.jsonl`, `figures/q4_axis_cos.png`)
 
@@ -99,6 +108,61 @@ villain, narrator and first-person only (pooled SD over those 4 classes):
 Within narrative text, then, Qwen's axis places helpful characters on the Assistant side of villains, narrators and diarists. That
 ordering is already fully present in the base model and is not sharpened by post-training. OLMo has no such ordering.
 
+## Q4.2b Register control (`register.json`, `register_rows.jsonl`, `figures/q4_register.png`; PREREG Q4.2b, DECISIONS #26–27)
+
+**Design.** Four new classes, 40 passages each, 60–120 words (`data/Q4/register.jsonl`, sha256 `eb1eff66…`), crossed with the
+battery's helpful and villain story classes:
+- helper vs villain;
+- × third-person encyclopaedia-style *entry* vs first-person expository *manual*.
+
+Written by Sonnet 5.5 and blind-labelled by Haiku 5.5 on character and on register separately. First pass 159/160 (one helper
+entry labelled NEITHER for character), rewritten once and passed: final purity 100% on both labels.
+
+**Pipeline.** Forward passes on the six small models; the same instruct AA, layer and position-0-excluded mean as Q4.2. The battery
+story passages, re-run in the same job, reproduce the Q4.2 activations exactly (cos 1.0000). Units: pooled within-class SD over the
+6 cells. CIs: 95% bootstrap over passages within class (2,000).
+
+| model (axis) | helper story | villain story | helper entry | villain entry | helper manual | villain manual | non-narrative (battery) |
+|---|---|---|---|---|---|---|---|
+| qwen_base (PC1 L24) | −0.67 | −1.89 | +2.99 | +2.12 | −0.54 | −2.01 | +3.58 |
+| qwen_it (PC1 L24) | −0.74 | −1.92 | +2.90 | +2.03 | −0.46 | −1.81 | +3.54 |
+| olmo_base (PC1 L23) | −0.13 | −1.50 | +2.48 | +1.34 | −0.26 | −1.93 | +3.18 |
+| olmo_rl (PC1 L23) | −0.20 | −1.49 | +2.88 | +1.75 | −0.71 | −2.23 | +3.64 |
+| olmo_rl (contrast L23) | −0.40 | −1.02 | +2.12 | +1.73 | −0.86 | −1.57 | +2.82 |
+
+Effects in SD units:
+- **R** = expository − story; **C** = helper − villain; **I** = interaction.
+- **R′, C′** = the literal entry-vs-manual 2 × 2.
+- **K** = villain entry − helper manual.
+
+| model | R [95% CI] | C [95% CI] | I | rule (primary) | R′ (entry − manual) | C′ | rule (literal 2 × 2) | K |
+|---|---|---|---|---|---|---|---|---|
+| qwen_base | +1.92 [+1.67, +2.27] | +1.20 [+0.92, +1.51] | −0.06 [−0.58, +0.49] | **both** | +3.83 [+3.45, +4.43] | +1.17 [+0.87, +1.52] | register | **+2.66 [+2.28, +3.18]** |
+| qwen_it | +1.99 [+1.74, +2.35] | +1.14 [+0.87, +1.46] | −0.07 | **both** | +3.60 [+3.21, +4.17] | +1.11 | register | +2.49 [+2.07, +3.00] |
+| olmo_base | +1.22 [+0.97, +1.51] | +1.39 [+1.13, +1.70] | +0.04 | both | +3.01 [+2.66, +3.48] | +1.41 | register | +1.60 [+1.24, +2.02] |
+| olmo_sft | +1.30 [+1.06, +1.60] | +1.31 [+1.05, +1.63] | +0.04 | both | +3.76 | +1.33 | register | +2.43 [+2.03, +2.93] |
+| olmo_dpo | +1.26 [+1.00, +1.58] | +1.29 [+1.04, +1.61] | +0.05 | both | +3.81 | +1.32 | register | +2.49 [+2.07, +3.01] |
+| olmo_rl | +1.27 [+1.03, +1.57] | +1.30 [+1.03, +1.61] | +0.04 | both | +3.78 | +1.32 | register | +2.46 [+2.03, +2.97] |
+
+OLMo contrast axis: "both" at every stage (e.g. RL R +1.07 [+0.80, +1.39], C +0.58 [+0.32, +0.88], K +2.59).
+
+**Rule outcome (pre-registered).** *Both* in all six models, on PC1 and on OLMo's contrast axis. Neither main effect is under half
+the other in the primary 2 × 2.
+
+**Reading.** The pre-registered "expository vs story" contrast hides the structure. Only the third-person entries move to the
+Assistant end, landing near encyclopaedia and code. First-person manuals are expository but stay at the level of the same
+character's stories. So the register dimension the axis tracks is *impersonal, third-person reference text vs a character's own
+voice*, not fiction vs non-fiction. That is why the literal 2 × 2 (entry vs manual) fires "register", with R′ about 3× C′.
+
+Character is real and additive: helpers sit ≈ 1.2 SD above villains in every register, with no interaction. But it is smaller than
+the register step. On Olivia's key contrast an encyclopaedia entry about villains beats a helper speaking in its own voice by
++2.5 SD. Base and post-trained models are indistinguishable.
+
+**Revisiting Q4.2.** The battery's "reversed" helpful gap is explained. The battery mixed a high-register class (non-narrative) into
+the "other classes" mean. Against other character-voiced text, helpers sit above villains, as the register control shows directly.
+
+**Spend.** API $0.30: writing $0.29, checks $0.01. GPU ≈ 3 min of forward passes (six models, 240 passages).
+
 ## Q4.3 Stage tracking, OLMo-3-7B (`battery.json` → `olmo.stages`, `figures/q4_stages.png`)
 
 | stage | cos(stage AA, RL chat AA) L23 | cos contrast axes | held-out d′ (M0) | battery g, final PC1 [CI] | battery g, final contrast | g on own AA | ρ class order vs RL |
@@ -168,7 +232,7 @@ therefore uninformative about the AA, not evidence against it.
 - The "AA ablation" readout could not be validated.
 
 ## Spend
-- **API.** Q4 item writing (Sonnet 5.5) $0.49, blind checks (Haiku) $0.15, Q4.4 labels (Haiku, 1,496 calls) $0.08. Q4 total ≈ $0.71.
+- **API.** Q4 item writing (Sonnet 5.5) $0.49, blind checks (Haiku) $0.15, Q4.4 labels (Haiku, 1,496 calls) $0.08. Q4 total ≈ $0.71 (+ $0.30 for Q4.2b).
   With Q4b ($0.41), Agent D's API total is ≈ $1.12 of the $4.00 share.
 - **GPU.**
   - Battery forward passes ran in the same model loads as Q4b Arm A (≈ 4 min total for six models).
