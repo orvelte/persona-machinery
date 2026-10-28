@@ -4,3 +4,7 @@
 {"ts": "2026-10-28T12:34:56", "module": "M0-traits", "usd": 0.0127, "calls": 200, "cached": 0, "note": "impoliteness filter olmo_rl"}
 {"ts": "2026-10-28T12:39:22", "module": "M0-gate", "usd": 0.0184, "calls": 235, "cached": 5, "note": "gate trait scores qwen_it"}
 {"ts": "2026-10-28T12:39:37", "module": "M0-gate", "usd": 0.0199, "calls": 235, "cached": 5, "note": "gate coherence qwen_it"}
+{"ts": "2026-10-28T12:44:09", "module": "M0-gate", "usd": 0.0169, "calls": 240, "cached": 60, "note": "gate2 trait qwen_it"}
+{"ts": "2026-10-28T12:44:22", "module": "M0-gate", "usd": 0.0186, "calls": 240, "cached": 60, "note": "gate2 coherence qwen_it"}
+{"ts": "2026-10-28T12:44:28", "module": "M0-gate", "usd": 0.0065, "calls": 100, "cached": 0, "note": "gate2 trait olmo_rl"}
+{"ts": "2026-10-28T12:44:34", "module": "M0-gate", "usd": 0.0074, "calls": 100, "cached": 0, "note": "gate2 coherence olmo_rl"}
