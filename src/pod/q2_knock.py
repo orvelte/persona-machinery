@@ -142,21 +142,45 @@ def resp_means(o, seqs, n_prompts, L):
     return torch.stack(out_L), torch.stack(out_all)
 
 
-def fit_axes(short, L):
-    X = np.load(M0 / f"acts_{short}_chat/acts.npz")["X"]
-    meta = read_jsonl(M0 / f"acts_{short}_chat/meta.jsonl")
-    H = X[:, L - 1].astype(np.float32)
-    roles = sorted({m["role"] for m in meta if m["role"] != "default"})
-    RM = np.stack([H[[i for i, m in enumerate(meta) if m["role"] == r and m["half"] == "A"]].mean(0) for r in roles])
-    dA = H[[i for i, m in enumerate(meta) if m["role"] == "default" and m["half"] == "A"]].mean(0)
+def replay_L(R, rows, L, B=16):
+    """Teacher-forced mean over completion tokens at layer L (standard forward), rows sorted by length."""
+    order = sorted(range(len(rows)), key=lambda i: len(rows[i]["prompt_ids"]) + len(rows[i]["completion_ids"]))
+    H = np.zeros((len(rows), 4096), np.float32)
+    for s in range(0, len(order), B):
+        ii = order[s:s + B]
+        seqs = [list(rows[i]["prompt_ids"]) + list(rows[i]["completion_ids"]) for i in ii]
+        o = R.forward(seqs, custom=False)
+        for k, i in enumerate(ii):
+            H[i] = o.hidden_states[L][k, rows[i]["n_prompt"]:len(seqs[k])].float().mean(0).cpu().numpy()
+        del o
+    return H
+
+
+def fit_axes(R, short, L, basis):
+    """Half-A axes from a fresh replay of the M0 role library at L* (the M0 acts are not on this pod; DECISIONS)."""
+    allr = [r for r in read_jsonl(M0 / f"gen_{short}_chat.jsonl") if r["n_gen"] > 0]
+    H = replay_L(R, allr, L)
+    roles = sorted({m["role"] for m in allr if m["role"] != "default"})
+    RM = np.stack([H[[i for i, m in enumerate(allr) if m["role"] == r and m["half"] == "A"]].mean(0) for r in roles])
+    dA = H[[i for i, m in enumerate(allr) if m["role"] == "default" and m["half"] == "A"]].mean(0)
     mu = RM.mean(0)
     _, _, Vt = np.linalg.svd(RM - mu, full_matrices=False); pc1 = Vt[0]
     if (dA - mu) @ pc1 < 0:
         pc1 = -pc1
     c = (dA - mu) / np.linalg.norm(dA - mu)
     role_pos = (RM - mu) @ pc1
-    m0_rows = {m["id"]: H[i] for i, m in enumerate(meta)}
-    return {"pc1": pc1, "c": c, "mu": mu, "roles": roles, "role_pos": role_pos}, m0_rows
+    # reproduction of M0: full-library role means and default mean vs the stored basis
+    bro = [str(x) for x in basis["roles"]] if "roles" in basis else None
+    RMall = np.stack([H[[i for i, m in enumerate(allr) if m["role"] == r]].mean(0) for r in (bro or roles)])
+    dall = H[[i for i, m in enumerate(allr) if m["role"] == "default"]].mean(0)
+    cosf = lambda a, b: float(a @ b / np.linalg.norm(a) / np.linalg.norm(b))  # noqa: E731
+    bm = basis[f"rolemeans_{L}"].astype(np.float32)
+    repro = {"default_cos": cosf(dall, basis[f"default_{L}"].astype(np.float32)),
+             "rolemeans_min_cos": min(cosf(RMall[j], bm[j]) for j in range(len(bm))) if bm.shape[0] == RMall.shape[0] else None,
+             "n_rows_replayed": len(allr)}
+    repro["pass"] = repro["default_cos"] >= 0.999 and (repro["rolemeans_min_cos"] or 0) >= 0.999
+    rowH = {m["id"]: H[i] for i, m in enumerate(allr)}
+    return {"pc1": pc1, "c": c, "mu": mu, "roles": roles, "role_pos": role_pos}, rowH, repro
 
 
 def main(short, out_dir, checks_only=False, no_gen=False):
@@ -169,8 +193,9 @@ def main(short, out_dir, checks_only=False, no_gen=False):
     narr = [r for r in read_jsonl(M0 / f"gen_{short}_narrative.jsonl") if r["role"] == "default" and r["half"] == "B"]
     narr.sort(key=lambda r: (r["qid"], r["sample"]))
     narr_prompt = {r["qid"]: r["prompt_ids"] for r in narr}
-    axes, m0_rows = fit_axes(short, L)
     basis = np.load(M0 / f"basis_{short}_chat.npz")
+    axes, m0_rows, repro = fit_axes(R, short, L, basis)
+    print("m0 repro", repro, flush=True)
     aa_all = np.stack([basis[f"aa_{l}"] for l in range(1, 33)]).astype(np.float32); mu_all = np.stack([basis[f"mu_{l}"] for l in range(1, 33)]).astype(np.float32)
     np.savez(out / "axes.npz", pc1=axes["pc1"], c=axes["c"], mu=axes["mu"], role_pos=axes["role_pos"], roles=np.array(axes["roles"]), aa_frozen=aa_all[L - 1], mu_frozen=mu_all[L - 1])
 
@@ -207,7 +232,7 @@ def main(short, out_dir, checks_only=False, no_gen=False):
     seqs = [x["seq"] for x in info]; q0s = [x["q0"] for x in info]; nps = [x["n_prompt"] for x in info]
 
     # ---- mechanics checks
-    checks = {"counts_row0": counts, "n_template": [int(s["a"].sum()) for s in S], "n_rand": [int(s["rand0"].sum()) for s in S]}
+    checks = {"m0_repro_library": repro, "counts_row0": counts, "n_template": [int(s["a"].sum()) for s in S], "n_rand": [int(s["rand0"].sum()) for s in S]}
     idx = list(range(6))
     o_std = R.forward([seqs[i] for i in idx], custom=False)
     o_cus = R.forward([seqs[i] for i in idx], kills=[None] * len(idx), q0s=[q0s[i] for i in idx], n_prompts=[nps[i] for i in idx])
@@ -305,8 +330,8 @@ def main(short, out_dir, checks_only=False, no_gen=False):
     # M0 reproduction check
     nn = [k for k, m in enumerate(meta_rows) if m["cond"] == "none"]
     cs = [float(HL[k] @ m0_rows[meta_rows[k]["id"]] / np.linalg.norm(HL[k]) / np.linalg.norm(m0_rows[meta_rows[k]["id"]])) for k in nn]
-    checks["m0_repro"] = {"min_cos": min(cs), "pass": min(cs) >= 0.999}
-    (out / "checks.json").write_text(json.dumps(checks, indent=1)); print("m0_repro", checks["m0_repro"], flush=True)
+    checks["none_vs_standard_forward"] = {"min_cos": min(cs), "pass": min(cs) >= 0.999}
+    (out / "checks.json").write_text(json.dumps(checks, indent=1)); print("none vs standard", checks["none_vs_standard_forward"], flush=True)
     np.savez(out / "tf.npz", H=HL.astype(np.float32), proj_layers=HALL.astype(np.float32))
     write_jsonl(out / "tf_rows.jsonl", meta_rows)
     if no_gen:

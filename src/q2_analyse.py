@@ -104,22 +104,26 @@ def tf_summary():
            "think": "think tags", "sink": "position 0 only", "b": "(b) system", "c": "(c) user", "rand0": "random ×1", "rand1": "random ×2", "rand2": "random ×3",
            "allprompt_nosink": "all prompt (sink kept)"}
     ms = [m for m in MODELS if m in S]
-    fig, axs = plt.subplots(len(ms), 1, figsize=(8.6, 3.3 * len(ms)), squeeze=False)
-    for ax, m in zip(axs[:, 0], ms):
-        res = S[m]["axes"]["pc1"]
+    panels = [(m, axn) for m in ms for axn in ("pc1", "c")]
+    fig, axs = plt.subplots(len(panels), 1, figsize=(8.6, 3.2 * len(panels)), squeeze=False, gridspec_kw={"hspace": 1.05})
+    for ax, (m, axn) in zip(axs[:, 0], panels):
+        res = S[m]["axes"][axn]; sd = S[m]["role_sd_pc1"]
         ks = [k for k in show if f"KO_{k}" in res["conds"]]
         xs = np.arange(len(ks))
         for j, (kind, col) in enumerate((("KO", figstyle.PALETTE[0]), ("TA", figstyle.PALETTE[1]))):
-            v = [res["conds"].get(f"{kind}_{k}", {"delta": (np.nan, np.nan, np.nan)})["delta"] for k in ks]
-            e, lo, hi = np.array([t[0] for t in v]), np.array([t[1] for t in v]), np.array([t[2] for t in v])
+            v = [res["conds"].get(f"{kind}_{k}", {"shift": (np.nan, np.nan, np.nan)})["shift"] for k in ks]
+            e, lo, hi = (np.array([t[i] for t in v]) / sd for i in range(3))
             ax.bar(xs + (j - 0.5) * 0.38, e, 0.38, color=col, hatch=figstyle.HATCHES[j], edgecolor="white", label="attention knockout" if kind == "KO" else "token ablation")
             ax.errorbar(xs + (j - 0.5) * 0.38, e, yerr=[e - lo, hi - e], fmt="none", ecolor="#333333", lw=0.8, capsize=2)
-        ax.axhline(0, color="#555555", lw=0.6); ax.axhline(1, color="#555555", lw=0.6, ls="--")
+        g = res["gap_none_minus_raw"]
+        ax.axhline(0, color="#555555", lw=0.6)
+        ax.axhspan(-g[2] / sd, -g[1] / sd, color=figstyle.PALETTE[2], alpha=0.18, lw=0)
+        ax.axhline(-g[0] / sd, color=figstyle.PALETTE[2], lw=1.2, ls="--", label="raw-document value (same content)")
         ax.set_xticks(xs); ax.set_xticklabels([lab[k] for k in ks], rotation=35, ha="right", fontsize=8)
-        ax.set_ylabel("Δ = shift toward raw-doc value")
-        figstyle.title(ax, f"{m} chat: AA (PC1, L*={LSTAR[m]}) moved toward the raw-document value",
-                       f"n = 30 default half-B responses (10 questions × 3); 1 = reaches raw-document value; cluster-bootstrap 95% CI over questions")
-        ax.legend(fontsize=8, loc="upper left")
+        ax.set_ylabel("shift (across-role SDs)")
+        figstyle.title(ax, f"{m} chat, {'PC1' if axn == 'pc1' else 'contrast axis c'} at L*={LSTAR[m]}: shift of the AA coordinate",
+                       f"n = 30 default half-B responses (10 questions × 3); unit = SD of the 99 half-A role positions on PC1; cluster-bootstrap 95% CI")
+        ax.legend(fontsize=7, loc="lower left", ncol=3)
     figstyle.save(fig, "q2_delta.png")
     # figure: layer profile
     fig, axs = plt.subplots(1, len(ms), figsize=(4.6 * len(ms), 3.4), squeeze=False)
@@ -199,7 +203,7 @@ def behaviour():
                     d[metric + "_diff"] = cluster_boot(keys, dif, rng)
             d["style_z_diff"] = {}
             if cond != "none":
-                for feat, sd in sdf[m].items():
+                for feat, sd in ((f_, s_) for f_, s_ in sdf[m].items() if s_ >= 0.01):
                     dif = lambda ks, X=X, feat=feat, sd=sd: np.mean([(X[k]["style"][feat] - none[k]["style"][feat]) / sd for k in ks])  # noqa: E731
                     d["style_z_diff"][feat] = cluster_boot(keys, dif, rng)
             d["finished"] = sum(X[k]["finished"] for k in keys); d["mean_len"] = float(np.mean([X[k]["n_gen"] for k in keys]))
