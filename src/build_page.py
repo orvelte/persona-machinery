@@ -108,9 +108,14 @@ MODULES = [
          "Descriptive only: at 3× strength the post-trained chat models retain less right after the window (3–4%) than the bases (8–11%). But the format-matched comparisons disagree, so this tracks chat format at least as much as training.",
      ],
      "figures": ["q6_trajectories.png", "q6_trajectories_3x.png", "q6_control.png"]},
-    {"id": "Q5", "name": "Persona vectors vs the axis", "status": "running",
+    {"id": "Q5", "name": "Persona vectors vs the axis", "status": "blocked",
      "question": "Does orthogonalising a trait vector to the axis remove its steering effect?",
-     "verdict": "Released now that the pod is idle: one final steering grid (1 layer, c = 2–4), then the mediation test on any trait that passes.", "points": [], "figures": []},
+     "verdict": "Not run: no trait vector steers its trait at usable coherence. The final pre-registered grid (1 layer, c = 2–4) failed for all three traits.",
+     "points": [
+         "Qwen3.5-9B instruct, layer 24 only, 20 held-out questions. At c ≤ 1 coherence holds (≥ 80) but no trait gains more than 7 points; at c = 2 sycophancy rises 23 → 76 and impoliteness 1 → 57, but coherence falls to 39–60; at c ≥ 3 the text is degenerate.",
+         "A usable window may lie between c = 1 and c = 2; the pre-registration allowed no further grid. At c = 2 many replies read as fluent while scoring 62–72 on coherence, so Chen's coherence prompt may partly penalise the trait itself — a question for a future pre-registration.",
+     ],
+     "figures": ["q5_gate.png"]},
 ]
 
 STATUS_LABEL = {"done": "Done", "running": "Running", "queued": "Queued", "blocked": "Blocked", "deferred": "Deferred"}
@@ -213,14 +218,14 @@ a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
   <section class="block">
     <h2>Status</h2>
     <div class="tablebox"><table><thead><tr><th>Module</th><th>Question</th><th>Status</th><th>Answer so far</th></tr></thead><tbody>{rows}</tbody></table></div>
-    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control; Q5 only if the pod is idle after those.</p>
+    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control, then Q5 once the pod was idle. A blind red-team review of all modules is running.</p>
   </section>
 
   <section class="block budget">
     <h2>Budget</h2>
     <div class="nums"><span>Total <b>${total:.2f}</b></span><span>GPU pod <b>${sp["pod"]:.2f}</b></span><span>Judges <b>${sp["api"]:.2f}</b></span><span>Stop and ask <b>$70</b></span><span>Hard cap <b>$90</b></span></div>
     <div class="bar" role="img" aria-label="Spend ${total:.2f} of the $90 cap"><div class="fill" style="width:{pct:.1f}%"></div><div class="stop" style="left:{stop_pct:.1f}%"></div></div>
-    <p class="meta">Pod: H100 at $3.99/h until its volume hung at 18:00Z; since 18:31Z an H200 at $5.29/h.</p>
+    <p class="meta">Pod: H100 at $3.99/h until its volume hung at 18:00Z; then an H200 at $5.29/h from 18:35Z. Both pods stopped at 20:17Z; spend is final.</p>
   </section>
 
   <section class="block">
