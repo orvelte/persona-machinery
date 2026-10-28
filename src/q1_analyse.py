@@ -78,7 +78,7 @@ def main(d, axis="aa"):
         res["rule"] = "intermediate (point>=50% but CI includes 50%)"
     else:
         res["rule"] = "intermediate"
-    (d.parent / f"gap_{axis}.json").write_text(json.dumps(res, indent=1))
+    (d.parent / (f"gap_{axis}.json" if "qwen_it" in d.name else f"gap_{d.name.replace('attr_', '')}_{axis}.json")).write_text(json.dumps(res, indent=1))
     print(f"[{axis}] total gap {tot:.3f}  embed {emb_gap:.3f}  attn {attn_tot:.3f}  mlp {mlp_tot:.3f}")
     print(f"  share top10 = {share:.3f}  CI(reselect) {res['share_top10_ci_reselect']}  CI(fixed) {res['share_top10_ci_fixed']}")
     print(f"  top3 share {res['top3_share']:.3f}  top10 of positive-mass {res['share_top10_of_posmass']:.3f}  rule = {res['rule']}")

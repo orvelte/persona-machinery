@@ -218,5 +218,28 @@
    "mlp_gap": 0.8825851082801819
   }
  ],
- "rule": "intermediate"
+ "rule": "intermediate",
+ "share_top10_ci_question_cluster": [
+  0.4225407838821411,
+  0.44789162278175354
+ ],
+ "total_gap_ci_question_cluster": [
+  11.439637184143066,
+  12.94449520111084
+ ],
+ "recon_abs_err_mean": 0.0010681466665118933,
+ "recon_abs_err_max": 0.007601261138916016,
+ "recon_err_frac_of_gap": 8.723175415070727e-05,
+ "n_components_for_50pct": 14,
+ "n_components_for_80pct": 73,
+ "n_components": 697,
+ "n_positive": 631,
+ "top10_heads_mlps": [
+  4,
+  6
+ ],
+ "softmax_heads_gap": 1.1048355102539062,
+ "deltanet_heads_gap": 7.015600681304932,
+ "mlp_gap_blocks19_24": 3.5779070258140564,
+ "attn_gap_blocks19_24": 5.856559306383133
 }

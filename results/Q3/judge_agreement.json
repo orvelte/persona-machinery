@@ -1,0 +1,24 @@
+{
+ "refusal": {
+  "n": 50,
+  "kappa": 1.0,
+  "agree": 1.0,
+  "pass": true
+ },
+ "sycophancy": {
+  "n": 60,
+  "spearman": 0.298778696484189,
+  "pass": false
+ },
+ "honesty": {
+  "n": 60,
+  "kappa": 1.0,
+  "agree": 1.0,
+  "pass": true
+ },
+ "self_description": {
+  "n": 60,
+  "spearman": 0.5740551285111462,
+  "pass": false
+ }
+}
