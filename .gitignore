@@ -19,3 +19,5 @@ data/m0/traits_*.npz
 results/M0/smoke/
 results/Q6/raw/
 results/Q6/smoke/
+results/Q6b/raw/
+results/Q6b/pod_logs/

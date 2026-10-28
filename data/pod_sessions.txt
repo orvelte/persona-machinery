@@ -1,3 +1,4 @@
 2026-10-28T16:52:21Z pod k1xbnos9g4kwni created ~16:21Z H100 3.99/h terminated 2026-10-28T18:31
 2026-10-28T18:31:00Z pod k1xbnos9g4kwni stopped 18:31Z (volume FUSE hang since ~18:00Z); terminated-equivalent for billing 2026-10-28T18:31
 2026-10-28T18:35:00Z pod 0334j1xh2w72cz created ~18:35Z H200 5.29/h (replacement for k1xbnos9g4kwni) terminated 2026-10-28T20:17
+2026-10-28T21:13:43Z pod um2u4eu13edqi0 created ~21:13Z 5.29/h (Q6b, cap 1 h) terminated 2026-10-28T21:38

@@ -38,3 +38,4 @@
 {"ts": "2026-10-28T14:51:13", "module": "Q3-sonnet", "usd": 0.7908, "calls": 599, "cached": 121, "note": "Q3 Sonnet rescore ['sycophancy', 'self_description']"}
 {"ts": "2026-10-28T15:15:33", "module": "Q5", "usd": 0.0136, "calls": 180, "cached": 60, "note": "gate3 trait qwen_it"}
 {"ts": "2026-10-28T15:15:45", "module": "Q5", "usd": 0.0148, "calls": 180, "cached": 60, "note": "gate3 coherence qwen_it"}
+{"ts": "2026-10-28T16:13:18", "module": "pod", "usd": 0.2, "note": "stuck pod j4ghbxr8rffeps on NVIDIA H100 80GB HBM3 deleted after 3 min"}

@@ -51,7 +51,7 @@ MODULES = [
      "figures": ["q2b_gate.png"]},
     {"id": "Q4b", "name": "Narrative convention vs the Assistant's judge distinction", "status": "done", "priority": True,
      "question": "Arm A: forced-choice log-odds (fit the test vs follow the spec) on 48 story templates crossed by judge × protagonist × stakes. Arm B: the base model simulating an AI-assistant transcript, scored by execution.",
-     "verdict": "No pretraining judge convention detected in stories. The base-model behavioural arm could not be measured (no gaming).",
+     "verdict": "No evidence of an automated-vs-human convention in base-model story endings, but the test was underpowered and not validated against Qwen3.8, so this null cannot carry weight. The narrative-convention explanation stays open.",
      "points": [
          "Arm A: base models show no automated-vs-human effect in story endings. Qwen base +0.015 nats/token [−0.001, +0.033], OLMo base +0.012 [−0.024, +0.047]; the scheduler-vs-none validity control is ≈ 0 in both.",
          "Post-trained models lean the other way: Qwen instruct −0.038 [−0.060, −0.015] and Qwen3.6-27B −0.071 [−0.120, −0.023], meaning more test-fitting under a human reviewer in stories.",
@@ -62,7 +62,7 @@ MODULES = [
      "figures": ["q4b_armA.png", "q4b_armB.png"]},
     {"id": "Q4", "name": "Pretraining origin of the axis", "status": "done",
      "question": "Base vs instruct axis cosine and CKA; a 200-passage narrative battery in five classes; OLMo stage tracking; three convention-vs-persona tasks.",
-     "verdict": "The axis exists before post-training (Qwen). On raw passages its specific signal is impersonal third-person reference text versus a character's own voice; character and fiction-vs-exposition differences are generic passage geometry.",
+     "verdict": "About voice, not narrative character. In pretraining the axis separates the impersonal reference voice (the encyclopaedia voice, nobody in particular) from characters speaking in their own voices. Helper-vs-villain separation is not specific to the axis. This holds for projection on raw passages.",
      "points": [
          "Qwen: the base model's narrative axis is the instruct axis (cos +0.81 with the instruct chat axis at L* 24; +0.88 in matched narrative format; split-half ceiling ≈ 0.93).",
          "OLMo: not the same axis by the 0.7 rule (+0.59 base narrative vs RL chat), mostly a format difference: base vs RL in matched narrative format is +0.91 (descriptive only).",
@@ -108,6 +108,17 @@ MODULES = [
          "Descriptive only: at 3× strength the post-trained chat models retain less right after the window (3–4%) than the bases (8–11%). But the format-matched comparisons disagree, so this tracks chat format at least as much as training.",
      ],
      "figures": ["q6_trajectories.png", "q6_trajectories_3x.png", "q6_control.png"]},
+    {"id": "Q6b", "name": "Basin test with off-persona context", "status": "done",
+     "question": "Put 48 tokens of the model's own off-persona text at the start of the default Assistant's reply, let it continue, and measure how much axis displacement remains 100–149 tokens later. Compared across OLMo base → SFT → DPO → RLVR and Qwen base vs instruct.",
+     "verdict": "RL deepens the Assistant basin relative to DPO; no other OLMo stage changes it detectably, so 'each stage deepens' is not supported.",
+     "points": [
+         "Positive control passes in all 7 pairs at both readout layers: the off-persona prefix moves the axis by 5–43 units, and a default-voice prefix from another question moves it by only 2–6% of that.",
+         "OLMo retained fraction after about 100 tokens (lower = faster return): base 0.56, SFT 0.64, DPO 0.77, RL 0.63. DPO→RL deepens, Δ −0.14 [−0.25, −0.04], at both L* and L*+4. Base→SFT and SFT→DPO show no detectable change; DPO's trend runs shallower.",
+         "Qwen: base 0.84 vs instruct 0.70 in both chat and matched narrative format. The chat step is significant (−0.15 [−0.26, −0.04]); the format-matched step is the same size but its CI just includes 0.",
+         "Reading: post-training changes how hard the Assistant pulls a trajectory back, but not monotonically. The clearest strengthening is from RL, after DPO had weakened it. Only 10 questions per pair, so the CIs are wide.",
+         "The readout axis was refit on half-A questions only, and read at L* and L*+4, which addresses the red team's Q6 points. About 25 pod-minutes in total.",
+     ],
+     "figures": ["q6b_return.png"]},
     {"id": "Q5", "name": "Persona vectors vs the axis", "status": "blocked",
      "question": "Does orthogonalising a trait vector to the axis remove its steering effect?",
      "verdict": "Not run: no trait vector steers its trait at usable coherence. The final pre-registered grid (1 layer, c = 2–4) failed for all three traits.",
@@ -234,7 +245,7 @@ a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
   <section class="block">
     <h2>Status</h2>
     <div class="tablebox"><table><thead><tr><th>Module</th><th>Question</th><th>Status</th><th>Answer so far</th></tr></thead><tbody>{rows}</tbody></table></div>
-    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control, then Q5 once the pod was idle. A blind red-team review of all modules is done; corrections are applied below.</p>
+    <p class="meta">Order set by Olivia: Q2/Q2b and Q4b first (done), then Q1/Q3, then Q6 on the training stages and the Q4 register control, then Q5 once the pod was idle, then Q6b (Olivia's context-perturbation follow-up). A blind red-team review of all modules is done; corrections are applied below.</p>
   </section>
 
   <section class="block">
@@ -259,7 +270,7 @@ a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
     <h2>Budget</h2>
     <div class="nums"><span>Total <b>${total:.2f}</b></span><span>GPU pod <b>${sp["pod"]:.2f}</b></span><span>Judges <b>${sp["api"]:.2f}</b></span><span>Stop and ask <b>$70</b></span><span>Hard cap <b>$90</b></span></div>
     <div class="bar" role="img" aria-label="Spend ${total:.2f} of the $90 cap"><div class="fill" style="width:{pct:.1f}%"></div><div class="stop" style="left:{stop_pct:.1f}%"></div></div>
-    <p class="meta">Pod: H100 at $3.99/h until its volume hung at 18:00Z; then an H200 at $5.29/h from 18:35Z. Both pods stopped at 20:17Z; spend is final.</p>
+    <p class="meta">Pod: H100 at $3.99/h until its volume hung at 18:00Z; then an H200 at $5.29/h from 18:35Z. Both stopped at 20:17Z. Q6b ran 21:13–21:38Z on a fresh H200 (the stopped pods' hosts had no free GPU); that pod and the H200 were then deleted.</p>
   </section>
 
   <section class="block">
